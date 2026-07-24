@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>單字練習簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Core Colors extracted and adapted from reference image */
+  --bg-main: #F4F5F7;        /* Light grayish background */
+  --bg-card: #FFFFFF;
+  --text-dark: #1C1F2A;      /* Deep contrast color */
+  --text-gray: #6B7280;
+  --border-color: #E5E7EB;
+  
+  /* Vibrant Theme Colors */
+  --theme-purple: #8B5CF6;   /* From Short-Term Goals block */
+  --theme-orange: #F97316;   /* From Design Out Waste / Recycling block */
+  --theme-lime: #84CC16;     /* From Regenerate Natural Systems block */
+  --theme-blue: #3B82F6;     /* Additional accent for variety */
+  --theme-coral: #F43F5E;
+  
+  /* Specific UI colors */
+  --accent-primary: var(--text-dark);
+  --accent-primary-light: #374151;
+  --dot-empty: #D1D5DB;
+  --dot-filled: var(--theme-purple);
+  
+  /* Typography & Layout */
+  --font-tc: 'Noto Sans TC', sans-serif;
+  --font-en: 'Outfit', -apple-system, sans-serif;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  
+  /* Levels */
+  --lv-A2: var(--theme-lime);
+  --lv-B1: var(--theme-orange);
+  --lv-B2: var(--theme-purple);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: var(--font-en);
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+/* Fallback for Chinese text */
+body :not(.en-text) { font-family: var(--font-tc); }
+.en-text { font-family: var(--font-en); }
+
+.wrap { max-width: 600px; margin: 0 auto; padding: 16px 16px 100px; }
+
+/* Header & Toolbar */
+header.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-top: 10px; }
+h1 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.5px; }
+.total { font-size: 0.85rem; color: var(--text-gray); font-weight: 600; display: block; margin-top: 4px; }
+.total b { color: var(--theme-purple); font-weight: 800; }
+
+.toolbar { display: flex; gap: 8px; }
+.btn {
+  border: none;
+  background: var(--bg-card);
+  border-radius: var(--radius-full);
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.btn:active { transform: scale(0.96); }
+.btn.primary { background: var(--text-dark); color: #fff; }
+.btn-icon { padding: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+
+nav.tabs {
+  display: flex; gap: 8px; margin-bottom: 16px;
+  overflow-x: auto; scrollbar-width: none; /* Hide scrollbar Firefox */
+  padding-bottom: 4px; /* Room for shadow/active state */
+}
+nav.tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar Safari/Chrome */
+.tab {
+  background: none; border: none; font-size: 1.05rem; padding: 8px 16px; cursor: pointer;
+  color: var(--text-gray); font-weight: 600; white-space: nowrap; border-radius: var(--radius-full);
+  transition: all 0.2s ease;
+}
+.tab.on { background: var(--text-dark); color: #fff; }
+
+.chips-container { margin-bottom: 16px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: 4px;}
+.chips-container::-webkit-scrollbar { display: none; }
+.chips { display: inline-flex; gap: 8px; }
+.chip {
+  border: 2px solid var(--bg-card); background: var(--bg-card); border-radius: var(--radius-full);
+  padding: 8px 16px; font-size: 0.9rem; font-weight: 600; color: var(--text-gray);
+  cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 6px;
+}
+.chip.on { border-color: var(--theme-purple); color: var(--text-dark); }
+.chip .n { font-size: 0.75rem; background: var(--bg-main); padding: 2px 8px; border-radius: var(--radius-full); color: var(--text-dark); font-weight: 800;}
+.chip.on .n { background: var(--theme-purple); color: #fff; }
+
+/* POS filters - smaller and distinct */
+.chips.pos .chip { padding: 6px 12px; font-size: 0.85rem; box-shadow: none; border: 1px solid var(--border-color); }
+.chips.pos .chip.on { background: var(--text-dark); color: #fff; border-color: var(--text-dark); }
+
+.row2 { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; }
+.search-wrapper { flex: 1; position: relative; }
+input.search {
+  width: 100%; border: none; border-radius: var(--radius-full); padding: 12px 16px 12px 40px;
+  font-size: 0.95rem; background: var(--bg-card); color: var(--text-dark); box-shadow: var(--shadow-sm);
+  font-family: inherit; font-weight: 500;
+}
+input.search:focus { outline: 2px solid var(--theme-purple); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); opacity: 0.4; font-size: 1.1rem;}
+label.hide { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-gray); cursor: pointer; user-select: none; }
+label.hide input { width: 18px; height: 18px; accent-color: var(--text-dark); }
+
+.filter-head { background: var(--bg-card); border-radius: var(--radius-md); padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+.filter-head-top { display: flex; justify-content: space-between; align-items: baseline; }
+.filter-head h2 { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); }
+.filter-head .prog-text { font-size: 0.85rem; font-weight: 700; color: var(--theme-purple); }
+.bar { width: 100%; height: 8px; background: var(--bg-main); border-radius: var(--radius-full); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--theme-purple); border-radius: var(--radius-full); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+.card {
+  background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px;
+  box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden; border: 2px solid transparent;
+}
+.card.done { border-color: var(--theme-lime); }
+/* Subtle decorative shape in background to match image style */
+.card::before {
+  content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px;
+  background: var(--bg-main); border-radius: 50%; opacity: 0.5; z-index: 0; pointer-events: none;
+}
+
+.card-content { position: relative; z-index: 1; }
+.def-zh-main { font-size: 1.6rem; font-weight: 900; color: var(--text-dark); margin-bottom: 8px; line-height: 1.3; }
+.en-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.word-en { font-size: 1.25rem; font-weight: 800; color: var(--theme-purple); letter-spacing: 0.5px; }
+.pos { font-size: 0.85rem; font-weight: 600; color: var(--text-gray); background: var(--bg-main); padding: 2px 8px; border-radius: var(--radius-sm); }
+.lv { font-size: 0.75rem; font-weight: 800; color: #fff; border-radius: var(--radius-sm); padding: 2px 8px; }
+.lv.A2 { background: var(--lv-A2); color: var(--text-dark);} .lv.B1 { background: var(--lv-B1); color: #fff;} .lv.B2 { background: var(--lv-B2); color: #fff;}
+
+.ipa { font-size: 0.85rem; color: var(--text-gray); margin-bottom: 12px; font-weight: 500;}
+.ipa b { font-weight: 700; color: var(--text-dark); font-size: 0.75rem; margin-right: 4px; background: var(--bg-main); padding: 2px 6px; border-radius: 4px;}
+.ipa span+b { margin-left: 10px; }
+
+.def-en { font-size: 0.95rem; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; line-height: 1.5; }
+.ex { font-size: 0.9rem; color: var(--text-gray); font-style: italic; border-left: 3px solid var(--theme-orange); padding-left: 12px; margin-bottom: 20px; line-height: 1.5; }
+
+/* Progress Dots - modern pill style */
+.progress-area { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-color); }
+.dots { display: flex; align-items: center; gap: 6px; }
+.dot {
+  width: 28px; height: 12px; border-radius: var(--radius-full); border: none;
+  background: var(--dot-empty); cursor: pointer; transition: background 0.2s, transform 0.1s;
+}
+.dot:active { transform: scale(0.9); }
+.dot.on { background: var(--dot-filled); }
+.card.done .dot.on { background: var(--theme-lime); } /* Turn green when mastered */
+.mastered-badge { display: none; font-size: 0.8rem; font-weight: 800; color: var(--theme-lime); background: rgba(132, 204, 22, 0.15); padding: 4px 10px; border-radius: var(--radius-full); }
+.card.done .mastered-badge { display: inline-block; }
+
+.empty { text-align: center; color: var(--text-gray); padding: 60px 20px; font-size: 1rem; font-weight: 600; background: var(--bg-card); border-radius: var(--radius-lg); margin-top: 20px; }
+
+.flash-container { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
+.fprog { font-size: 0.9rem; font-weight: 700; color: var(--text-gray); margin-bottom: 16px; background: var(--bg-card); padding: 6px 16px; border-radius: var(--radius-full); box-shadow: var(--shadow-sm); }
+.fcard-wrap { width: 100%; perspective: 1000px; }
+.fcard {
+  width: 100%; min-height: 400px; background: var(--bg-card); border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 24px;
+  cursor: pointer; box-shadow: var(--shadow-md); user-select: none;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  position: relative; border: 2px solid var(--border-color);
+}
+.fcard:active { transform: scale(0.98); }
+
+/* Front/Back Content */
+.fc-content { text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.fc-front .word-zh-large { font-size: 2.8rem; font-weight: 900; color: var(--text-dark); line-height: 1.2; word-break: keep-all;}
+.fc-hint { font-size: 0.85rem; font-weight: 600; color: var(--text-gray); margin-top: 32px; opacity: 0.7; background: var(--bg-main); padding: 6px 16px; border-radius: var(--radius-full);}
+
+.fc-back .word-en-ans { font-size: 2.5rem; font-weight: 900; color: var(--theme-purple); margin-bottom: 8px; letter-spacing: 0.5px;}
+.fc-back .pos-lv { margin: 8px 0 16px; display: flex; gap: 8px; align-items: center; justify-content: center; }
+.fc-back .def-en { font-size: 1.1rem; font-weight: 500; color: var(--text-dark); margin-bottom: 16px; line-height: 1.5; }
+.fc-back .ex { font-size: 1rem; color: var(--text-gray); font-style: italic; line-height: 1.5; }
+
+.fbtns { display: flex; gap: 16px; justify-content: center; margin-top: 32px; width: 100%; }
+.fbtn {
+  flex: 1; max-width: 160px; border-radius: var(--radius-full); padding: 16px 24px;
+  font-size: 1.05rem; font-weight: 800; border: none; background: var(--bg-card);
+  color: var(--text-dark); cursor: pointer; box-shadow: var(--shadow-sm);
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.fbtn:active { transform: translateY(2px); box-shadow: none; }
+.fbtn.know { background: var(--text-dark); color: #fff; }
+.fbtn.know .icon { color: var(--theme-lime); }
+
+.fnav { margin-top: 24px; }
+.fnav button { background: none; border: none; color: var(--text-gray); font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 8px 16px; border-radius: var(--radius-full); transition: background 0.2s; }
+.fnav button:active { background: #e5e7eb; }
+
+/* Custom Modal styling matching theme */
+#customModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(28, 31, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 20px;}
+.modal-content { background: var(--bg-card); padding: 32px 24px; border-radius: var(--radius-lg); max-width: 340px; width: 100%; text-align: center; box-shadow: var(--shadow-md); }
+.modal-content h3 { font-size: 1.4rem; font-weight: 900; color: var(--text-dark); margin-bottom: 12px; }
+.modal-content p { margin-bottom: 24px; font-size: 1rem; color: var(--text-gray); font-weight: 500; line-height: 1.5;}
+.modal-btns { display: flex; gap: 12px; }
+.modal-btns button { flex: 1; padding: 14px; font-size: 1rem; border-radius: var(--radius-full); font-weight: 800; border: none; cursor: pointer; }
+.modal-cancel { background: var(--bg-main); color: var(--text-dark); }
+.modal-confirm { background: var(--theme-coral); color: #fff; }
+
+.note { font-size: 0.8rem; font-weight: 500; color: var(--text-gray); text-align: center; margin-top: 40px; line-height: 1.6; padding: 0 16px;}
+
+.btn-speak {
+  background: var(--bg-main); border: none; border-radius: 50%;
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--theme-purple); transition: transform 0.1s, background 0.2s;
+  flex-shrink: 0; margin-left: 2px;
+}
+.btn-speak:active { transform: scale(0.9); background: #E5E7EB; }
+.btn-speak svg { width: 16px; height: 16px; fill: currentColor; }
+.fc-back .btn-speak { width: 40px; height: 40px; margin-left: 8px; }
+.fc-back .btn-speak svg { width: 22px; height: 22px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>單字練習簿</h1>
+      <span class="total" id="totalStat"></span>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="resetBtn" aria-label="重設進度">↻ 重設</button>
+      <button class="btn primary" id="modeBtn">閃卡模式</button>
+    </div>
+  </header>
+  
+  <nav class="tabs" id="tabs"></nav>
+  
+  <div class="chips-container">
+      <div class="chips" id="filChips"></div>
+  </div>
+  
+  <div class="chips-container" style="margin-bottom: 24px;">
+      <div class="chips pos" id="posChips"></div>
+  </div>
+  
+  <div class="row2" id="listTools">
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input class="search" id="search" type="text" placeholder="搜尋中文或單字…">
+    </div>
+    <label class="hide"><input type="checkbox" id="hideDone"> 隱藏已熟記</label>
+  </div>
+  
+  <div class="filter-head" id="filHead"></div>
+  
+  <main id="main"></main>
+  
+  <p class="note" id="footerNote">每個字有 7 格記憶點——研究說一個字平均要忘記七次才真正記住。集滿 7 格即熟記。</p>
+</div>
+
+<div id="customModal">
+  <div class="modal-content">
+    <h3>重設進度</h3>
+    <p>確定要清除所有單字的記憶進度嗎？此動作無法復原。</p>
+    <div class="modal-btns">
+      <button class="modal-cancel" id="modalCancel">取消</button>
+      <button class="modal-confirm" id="modalConfirm">確定清除</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// 從 Firebase SDK 引入需要的模組
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// 👇 將你截圖上的專屬資料貼在這裡 👇
+const firebaseConfig = {
+  apiKey: "AIzaSyCm_X_bh02UrJhbTAWeHjvtNVCAgcQadTo",
+  authDomain: "vocabapp-3586e.firebaseapp.com",
+  projectId: "vocabapp-3586e",
+  storageBucket: "vocabapp-3586e.firebasestorage.app",
+  messagingSenderId: "119683502710",
+  appId: "1:119683502710:web:d24dc34767ef41620a0557",
+  measurementId: "G-KP6B1SWBPC"
+};
+// 👆 貼上範圍結束 👆
+
+let db, auth, userId = null;
+let isSyncing = false;
+let progress = {}; 
+let state = {tab: "life", fil: "novel", pos: "all", mode: "list", q: "", hideDone: false};
+let flash = {order: [], i: 0, flipped: false};
+
+// 初始化 Firebase 並與你的資料庫連線
+async function initFirebase() {
+  try {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    
+    // 使用匿名登入，這樣即使不註冊帳號也能為每個設備產生專屬 ID 來記住進度
+    await signInAnonymously(auth);
+    userId = auth.currentUser.uid;
+    console.log("Firebase 登入成功！User ID:", userId);
+    
+    // 綁定雲端進度資料：現在資料會存在你專屬的 'users' -> [userId] 路徑下
+    const docRef = doc(db, 'users', userId);
+    onSnapshot(docRef, (snap) => {
+      isSyncing = true;
+      if (snap.exists()) {
+        progress = snap.data().words || {};
+      } else {
+        progress = {};
+      }
+      renderAll();
+      isSyncing = false;
+    }, (err) => {
+      console.error("Firebase sync error:", err);
+    });
+  } catch (e) {
+    console.error("Firebase 初始化失敗，請確認設定或已開啟匿名登入", e);
+    renderAll();
+  }
+}
+
+let saveTimer = null;
+function save() {
+  if (!userId || isSyncing) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const docRef = doc(db, 'users', userId);
+      await setDoc(docRef, { words: progress }, { merge: true });
+    } catch(e) {
+      console.error("儲存至雲端失敗", e);
+    }
+  }, 400);
+}
+
+
+// --- 以下為單字資料與介面邏輯 (與先前相同) ---
+
+window.V=[];
+function W(tab,fil,rows){V.push({tab:tab,fil:fil,rows:rows});}
+const META={
+  life:{label:"生活日常",filters:{novel:"看小說",home:"居家佈置",museum:"逛美術館",film:"電影追劇",vinyl:"音樂黑膠",fest:"音樂祭"}},
+  work:{label:"職場專業",filters:{uiux:"UI/UX 設計",brand:"品牌設計",tech:"科技職場"}},
+  hobby:{label:"興趣探索",filters:{cook:"料理",boulder:"抱石攀岩",hike:"登山健行",snorkel:"浮潛",camp:"露營",ski:"滑雪"}}
+};
+
+W("work","uiux",[
+["iterate","v.","B2","ˈɪt̬.ə.reɪt","ˈɪt.ər.eɪt","to repeat a process again and again to improve it","反覆修正；迭代","We iterate on the layout every sprint."],
+["prototype","v.","B2","ˈproʊ.t̬ə.taɪp","ˈprəʊ.tə.taɪp","to build a first test version of something","製作原型","Let's prototype the flow in Figma first."],
+["wireframe","v.","B2","ˈwaɪr.freɪm","ˈwaɪə.freɪm","to sketch the basic structure of a screen","畫線框圖","I wireframed the onboarding screens today."],
+["align","v.","B1","əˈlaɪn","","to place things in a straight line; to agree","對齊；達成共識","The icons don't align with the text."],
+["refine","v.","B2","rɪˈfaɪn","","to improve something with small changes","細修；精煉","We're still refining the checkout flow."],
+["simplify","v.","B1","ˈsɪm.plə.faɪ","","to make something easier or less complex","簡化","Can we simplify this form to three fields?"],
+["streamline","v.","B2","ˈstriːm.laɪn","","to make a process simpler and more efficient","精簡流程","This update streamlines the sign-up process."],
+["validate","v.","B2","ˈvæl.ə.deɪt","","to prove that an idea or design works","驗證","We validated the concept with five users."],
+["tweak","v.","B2","twiːk","","to make a small change to improve something","微調","Just tweak the spacing a little."],
+["navigate","v.","B1","ˈnæv.ə.ɡeɪt","","to find your way around a website or app","瀏覽；導航","Users couldn't navigate back to the homepage."],
+["onboard","v.","B2","ˈɑːn.bɔːrd","ˈɒn.bɔːd","to guide a new user through a product","引導新用戶","The app onboards users in under a minute."],
+["toggle","v.","B2","ˈtɑː.ɡəl","ˈtɒɡ.əl","to switch between two settings or views","切換","Tap here to toggle dark mode."],
+["drag","v.","A2","dræɡ","","to move something across a screen while pressing it","拖曳","Drag the card into the done column."],
+["hover","v.","B2","ˈhʌv.ɚ","ˈhɒv.ə","to hold the cursor over something without clicking","游標懸停","A tooltip appears when you hover over the icon."],
+["redesign","v.","B1","ˌriː.dɪˈzaɪn","","to design something again in a different way","重新設計","We're redesigning the whole settings page."],
+["intuitive","adj.","B2","ɪnˈtuː.ə.t̬ɪv","ɪnˈtjuː.ɪ.tɪv","easy to use without needing instructions","直覺好用的","The gesture controls feel really intuitive."],
+["seamless","adj.","B2","ˈsiːm.ləs","","smooth, with no interruptions or visible joins","無縫流暢的","Payment should feel seamless on mobile."],
+["responsive","adj.","B2","rɪˈspɑːn.sɪv","rɪˈspɒn.sɪv","adapting well to different screen sizes; reacting fast","響應式的；反應快的","The site is fully responsive on tablets."],
+["accessible","adj.","B2","əkˈses.ə.bəl","","able to be used by everyone, including disabled people","無障礙的；易取得的","This contrast ratio isn't accessible enough."],
+["consistent","adj.","B1","kənˈsɪs.tənt","","always the same in style or behavior","一致的","Keep the button styles consistent across pages."],
+["cluttered","adj.","B2","ˈklʌt̬.ɚd","ˈklʌt.əd","untidily full of too many things","雜亂擁擠的","The dashboard feels cluttered with widgets."],
+["minimal","adj.","B2","ˈmɪn.ə.məl","","using as few elements as possible","極簡的","They went for a very minimal landing page."],
+["user-friendly","adj.","B1","ˌjuː.zɚˈfrend.li","ˌjuː.zəˈfrend.li","easy for people to use","易用的","The new filter is much more user-friendly."],
+["interactive","adj.","B1","ˌɪn.t̬ɚˈæk.tɪv","ˌɪn.təˈræk.tɪv","responding to a user's actions","互動式的","We added an interactive product demo."],
+["legible","adj.","B2","ˈledʒ.ə.bəl","","clear enough to read easily","（字體）清晰易讀的","Is 12px still legible on small screens?"],
+["clickable","adj.","B1","ˈklɪk.ə.bəl","","able to be clicked; looking like a link","可點擊的","Make the whole card clickable, not just the title."],
+["clean","adj.","A2","kliːn","","simple, tidy and pleasant to look at","乾淨俐落的","I love how clean this interface looks."],
+["scannable","adj.","B2","ˈskæn.ə.bəl","","easy to read quickly by moving your eyes over it","一眼可掃讀的","Headings make long pages more scannable."],
+["generic","adj.","B2","dʒəˈner.ɪk","","ordinary, with nothing special or unique","制式無特色的","The template looks a bit generic."],
+["functional","adj.","B2","ˈfʌŋk.ʃən.əl","","designed to be useful rather than beautiful","實用取向的","It's functional, but it needs more personality."],
+["layout","n.","B1","ˈleɪ.aʊt","","the way things are arranged on a page","版面配置","Try a two-column layout for the article."],
+["interface","n.","B2","ˈɪn.t̬ɚ.feɪs","ˈɪn.tə.feɪs","the screens and controls a user interacts with","介面","The interface hides advanced options by default."],
+["usability","n.","B2","ˌjuː.zəˈbɪl.ə.t̬i","ˌjuː.zəˈbɪl.ə.ti","how easy something is to use","易用性","We ran a usability test last Friday."],
+["mockup","n.","B2","ˈmɑːk.ʌp","ˈmɒk.ʌp","a realistic visual model of a design","視覺稿；模型","I'll send the high-fidelity mockups tonight."],
+["spacing","n.","B1","ˈspeɪ.sɪŋ","","the amount of empty space between elements","間距","The spacing between sections feels too tight."],
+["hierarchy","n.","B2","ˈhaɪ.rɑːr.ki","ˈhaɪə.rɑː.ki","the order of importance shown through size and position","視覺層級","Strong hierarchy guides the eye down the page."],
+["contrast","n.","B1","ˈkɑːn.træst","ˈkɒn.trɑːst","a clear difference, e.g. between light and dark","對比","Increase the contrast for better readability."],
+["grid","n.","B2","ɡrɪd","","a system of lines used to arrange content","網格","Everything snaps to an eight-point grid."],
+["icon","n.","A2","ˈaɪ.kɑːn","ˈaɪ.kɒn","a small picture that represents a function","圖示","The trash icon is too easy to tap by mistake."],
+["flow","n.","B2","floʊ","fləʊ","the path a user takes through a product","使用流程","The sign-up flow has too many steps."],
+["handoff","n.","B2","ˈhænd.ɑːf","ˈhænd.ɒf","the moment a design is passed to developers","設計交付","Clean files make the handoff much smoother."],
+["component","n.","B2","kəmˈpoʊ.nənt","kəmˈpəʊ.nənt","a reusable building block of an interface","元件","We reuse the same card component everywhere."],
+["pain point","n.","B2","ˈpeɪn ˌpɔɪnt","","a specific problem that annoys users","痛點","Slow loading is the biggest pain point."],
+["feedback","n.","B1","ˈfiːd.bæk","","comments about how good or useful something is","回饋","User feedback shaped this whole release."],
+["visually","adv.","B2","ˈvɪʒ.u.ə.li","","in a way related to seeing or appearance","視覺上","Visually, the two versions are almost identical."],
+["intuitively","adv.","B2","ɪnˈtuː.ə.t̬ɪv.li","ɪnˈtjuː.ɪ.tɪv.li","in a natural way, without thinking hard","直覺地","Users intuitively swiped left to delete."],
+["consistently","adv.","B1","kənˈsɪs.tənt.li","","in the same way every time","一致地","Apply the brand color consistently."],
+["instantly","adv.","B1","ˈɪn.stənt.li","","immediately, without delay","立即地","The preview updates instantly as you type."],
+["deliberately","adv.","B2","dɪˈlɪb.ɚ.ət.li","dɪˈlɪb.ər.ət.li","on purpose, after careful thought","刻意地","We deliberately left that space empty."],
+["logically","adv.","B2","ˈlɑː.dʒɪ.kəl.i","ˈlɒdʒ.ɪ.kəl.i","in a way that follows clear reasoning","有邏輯地","Group the settings logically, not alphabetically."]
+]);
+W("work","brand",[
+["rebrand","v.","B2","ˌriːˈbrænd","","to change a company's image and identity","品牌重塑","The startup rebranded after the merger."],
+["position","v.","B2","pəˈzɪʃ.ən","","to shape how people see a product in the market","定位","We position the app as a premium tool."],
+["convey","v.","B2","kənˈveɪ","","to communicate an idea or feeling","傳達","The logo should convey trust and warmth."],
+["evoke","v.","B2","ɪˈvoʊk","ɪˈvəʊk","to make someone feel or remember something","喚起（情感）","These colors evoke a sense of calm."],
+["differentiate","v.","B2","ˌdɪf.əˈren.ʃi.eɪt","","to make something clearly different from others","做出差異化","Good packaging differentiates us on the shelf."],
+["resonate","v.","B2","ˈrez.ə.neɪt","","to feel meaningful and true to someone","引起共鳴","The tagline really resonates with young users."],
+["propose","v.","B1","prəˈpoʊz","prəˈpəʊz","to suggest a plan or idea formally","提案","We proposed three directions to the client."],
+["craft","v.","B2","kræft","krɑːft","to make something with care and skill","精心打造","She crafted the identity over two months."],
+["unify","v.","B2","ˈjuː.nə.faɪ","","to bring separate things together as one","統一","The style guide unifies all our channels."],
+["refresh","v.","B1","rɪˈfreʃ","","to update something to feel new again","更新；翻新","The logo just needs a light refresh."],
+["embody","v.","B2","ɪmˈbɑː.di","ɪmˈbɒd.i","to be a clear expression of an idea","體現","The typeface embodies the brand's playfulness."],
+["showcase","v.","B2","ˈʃoʊ.keɪs","ˈʃəʊ.keɪs","to show something at its best","展示（亮點）","The site showcases our strongest case studies."],
+["stand out","phr. v.","B1","ˌstændˈaʊt","","to be easily noticed among others","脫穎而出","Bold type helps the poster stand out."],
+["roll out","phr. v.","B2","ˌroʊlˈaʊt","ˌrəʊlˈaʊt","to launch something gradually across places","逐步推出","We'll roll out the new identity next quarter."],
+["commission","v.","B2","kəˈmɪʃ.ən","","to formally ask someone to create work","委託製作","They commissioned an illustrator for the campaign."],
+["memorable","adj.","B1","ˈmem.ɚ.ə.bəl","ˈmem.ər.ə.bəl","easy to remember","令人印象深刻的","A memorable logo is usually a simple one."],
+["distinctive","adj.","B2","dɪˈstɪŋk.tɪv","","clearly different and easy to recognize","獨特鮮明的","That shade of orange is very distinctive."],
+["cohesive","adj.","B2","koʊˈhiː.sɪv","kəʊˈhiː.sɪv","working together as a well-connected whole","整體協調的","The campaign feels cohesive across platforms."],
+["bold","adj.","B1","boʊld","bəʊld","strong, confident and eye-catching","大膽搶眼的","They chose a bold, oversized headline."],
+["timeless","adj.","B2","ˈtaɪm.ləs","","never going out of style","經典不過時的","We want something timeless, not trendy."],
+["iconic","adj.","B2","aɪˈkɑː.nɪk","aɪˈkɒn.ɪk","famous and instantly recognized","標誌性的","The swoosh is an iconic mark."],
+["playful","adj.","B1","ˈpleɪ.fəl","","light-hearted and fun","俏皮有趣的","The mascot gives the brand a playful side."],
+["sleek","adj.","B2","sliːk","","smooth, modern and stylish","俐落有型的","The packaging has a sleek matte finish."],
+["authentic","adj.","B2","ɑːˈθen.t̬ɪk","ɔːˈθen.tɪk","real and true to its own character","真實不做作的","Younger audiences want brands to feel authentic."],
+["premium","adj.","B2","ˈpriː.mi.əm","","of higher quality and price","高端的","Gold foil gives it a premium feel."],
+["versatile","adj.","B2","ˈvɝː.sə.t̬əl","ˈvɜː.sə.taɪl","usable in many different situations","百搭多用的","The mark stays versatile at any size."],
+["recognizable","adj.","B2","ˈrek.əɡ.naɪ.zə.bəl","","easy to identify at a glance","一眼可認的","The silhouette alone is instantly recognizable."],
+["striking","adj.","B2","ˈstraɪ.kɪŋ","","unusual in a way that attracts attention","搶眼奪目的","The billboard uses a striking color clash."],
+["quirky","adj.","B2","ˈkwɝː.ki","ˈkwɜː.ki","unusual in an attractive, charming way","古怪討喜的","Their quirky illustrations set them apart."],
+["dated","adj.","B2","ˈdeɪ.t̬ɪd","ˈdeɪ.tɪd","looking old-fashioned in a bad way","過時的","The gradient logo looks a bit dated now."],
+["logo","n.","A2","ˈloʊ.ɡoʊ","ˈləʊ.ɡəʊ","a symbol that represents a company","商標","The logo works in black and white too."],
+["identity","n.","B2","aɪˈden.t̬ə.t̬i","aɪˈden.tə.ti","the full visual and verbal character of a brand","品牌識別","We're building the identity from scratch."],
+["tagline","n.","B2","ˈtæɡ.laɪn","","a short memorable phrase used by a brand","品牌標語","The tagline needs to fit in one breath."],
+["palette","n.","B2","ˈpæl.ət","","the set of colors used in a design","色盤；配色","We limited the palette to four colors."],
+["typography","n.","B2","taɪˈpɑː.ɡrə.fi","taɪˈpɒɡ.rə.fi","the style and arrangement of type","字體設計","Strong typography carries the whole poster."],
+["audience","n.","B1","ˈɑː.di.əns","ˈɔː.di.əns","the group of people a brand speaks to","受眾","Who exactly is the target audience here?"],
+["impression","n.","B1","ɪmˈpreʃ.ən","","the feeling something gives people","印象","First impressions decide in three seconds."],
+["asset","n.","B2","ˈæs.et","","a design file or resource used by a brand","素材；資產","Upload the final assets to the shared drive."],
+["guideline","n.","B1","ˈɡaɪd.laɪn","","an official rule about how to do something","規範；準則","The brand guidelines ban stretching the logo."],
+["moodboard","n.","B2","ˈmuːd.bɔːrd","ˈmuːd.bɔːd","a collage of images showing a visual direction","情緒板","Let's start with a moodboard, not sketches."],
+["aesthetic","n.","B2","esˈθet̬.ɪk","iːsˈθet.ɪk","a particular style or look","美感風格","They lean into a retro-futuristic aesthetic."],
+["deck","n.","B2","dek","","a set of presentation slides","簡報","I'm polishing the pitch deck tonight."],
+["typeface","n.","B2","ˈtaɪp.feɪs","","a designed set of letters, e.g. Helvetica","字型","We paired a serif typeface with a mono."],
+["deliverable","n.","B2","dɪˈlɪv.ɚ.ə.bəl","dɪˈlɪv.ər.ə.bəl","a finished piece of work owed to a client","交付項目","The deliverables include a full logo suite."],
+["confidently","adv.","B1","ˈkɑːn.fə.dənt.li","ˈkɒn.fɪ.dənt.li","in a sure, self-assured way","自信地","Present radical ideas confidently and simply."],
+["subtly","adv.","B2","ˈsʌt̬.əl.i","ˈsʌt.əl.i","in a way that is not obvious","低調巧妙地","The pattern subtly repeats the logo shape."],
+["strategically","adv.","B2","strəˈtiː.dʒɪ.kəl.i","","as part of a careful long-term plan","策略性地","The color was chosen strategically for shelf impact."],
+["purposefully","adv.","B2","ˈpɝː.pəs.fəl.i","ˈpɜː.pəs.fəl.i","with a clear aim in mind","有意圖地","Every element is purposefully placed."],
+["universally","adv.","B2","ˌjuː.nəˈvɝː.səl.i","ˌjuː.nɪˈvɜː.səl.i","by everyone, everywhere","普遍地","The symbol is universally understood."],
+["elegantly","adv.","B2","ˈel.ə.ɡənt.li","","in a graceful, refined way","優雅地","The type scales elegantly across sizes."]
+]);
+W("work","tech",[
+["collaborate","v.","B1","kəˈlæb.ə.reɪt","","to work together with others","協作","Design and engineering collaborate daily here."],
+["brainstorm","v.","B1","ˈbreɪn.stɔːrm","ˈbreɪn.stɔːm","to think of many ideas quickly in a group","腦力激盪","We brainstormed names for the feature."],
+["prioritize","v.","B2","praɪˈɔːr.ə.taɪz","praɪˈɒr.ɪ.taɪz","to decide what is most important to do first","排定優先順序","Let's prioritize the bugs before new features."],
+["delegate","v.","B2","ˈdel.ə.ɡeɪt","","to give part of your work to someone else","分派；授權","Good leads know when to delegate."],
+["implement","v.","B2","ˈɪm.plə.ment","","to put a plan or design into action","實作；執行","The team implemented the redesign in two weeks."],
+["deploy","v.","B2","dɪˈplɔɪ","","to release software so people can use it","部署上線","We deploy every Thursday afternoon."],
+["sync","v.","B2","sɪŋk","","to meet briefly to share updates; to update data together","同步","Let's sync for ten minutes after lunch."],
+["follow up","phr. v.","B1","ˌfɑː.loʊˈʌp","ˌfɒl.əʊˈʌp","to check on something again later","後續追蹤","I'll follow up with the client tomorrow."],
+["wrap up","phr. v.","B2","ˌræpˈʌp","","to finish something completely","收尾","Can we wrap up this project by Friday?"],
+["postpone","v.","B1","poʊstˈpoʊn","pəʊstˈpəʊn","to move something to a later time","延期","The launch was postponed to March."],
+["negotiate","v.","B2","nəˈɡoʊ.ʃi.eɪt","nəˈɡəʊ.ʃi.eɪt","to discuss until you reach an agreement","協商","We negotiated a more realistic deadline."],
+["clarify","v.","B2","ˈkler.ə.faɪ","ˈklær.ɪ.faɪ","to make something easier to understand","釐清","Could you clarify what done means here?"],
+["estimate","v.","B1","ˈes.tə.meɪt","","to guess the size, time or cost of something","估算","We estimated three days for this task."],
+["pivot","v.","B2","ˈpɪv.ət","","to change direction or strategy quickly","轉向；轉型","The startup pivoted to a B2B model."],
+["automate","v.","B2","ˈɑː.t̬ə.meɪt","ˈɔː.tə.meɪt","to make a machine do a task for you","自動化","We automated the weekly report."],
+["remote","adj.","B1","rɪˈmoʊt","rɪˈməʊt","done from home, not in an office","遠端的","Half the team is fully remote."],
+["hybrid","adj.","B2","ˈhaɪ.brɪd","","mixing office days and home days","混合辦公的","We switched to a hybrid schedule."],
+["agile","adj.","B2","ˈædʒ.əl","ˈædʒ.aɪl","working in fast, flexible cycles","敏捷的","Agile teams ship small updates often."],
+["cross-functional","adj.","B2","ˌkrɑːsˈfʌŋk.ʃən.əl","ˌkrɒsˈfʌŋk.ʃən.əl","including people from different departments","跨部門的","I'm in a cross-functional product squad."],
+["tight","adj.","B1","taɪt","","allowing very little time or money","（時程）緊的","The timeline is tight but doable."],
+["overdue","adj.","B2","ˌoʊ.vɚˈduː","ˌəʊ.vəˈdjuː","later than the expected time","逾期的","That invoice is two weeks overdue."],
+["ongoing","adj.","B2","ˈɑːnˌɡoʊ.ɪŋ","ˈɒnˌɡəʊ.ɪŋ","still continuing, not finished","進行中的","Accessibility work is an ongoing effort."],
+["scalable","adj.","B2","ˈskeɪ.lə.bəl","","able to grow without breaking","可擴展的","Is this design system scalable to ten products?"],
+["innovative","adj.","B1","ˈɪn.ə.veɪ.t̬ɪv","ˈɪn.ə.və.tɪv","using new ideas and methods","創新的","It's the most innovative feature this year."],
+["demanding","adj.","B2","dɪˈmæn.dɪŋ","dɪˈmɑːn.dɪŋ","needing a lot of time, effort or attention","要求高的","Launch weeks are pretty demanding."],
+["supportive","adj.","B1","səˈpɔːr.t̬ɪv","səˈpɔː.tɪv","giving help and encouragement","支持的","My manager is really supportive of side projects."],
+["transparent","adj.","B2","trænˈsper.ənt","trænˈspær.ənt","open and honest, hiding nothing","透明公開的","Salaries here are fully transparent."],
+["proactive","adj.","B2","proʊˈæk.tɪv","prəʊˈæk.tɪv","acting before problems appear","主動積極的","Be proactive about flagging risks early."],
+["senior","adj.","B1","ˈsiː.njɚ","ˈsiː.ni.ə","higher in rank or experience","資深的","She was promoted to senior designer."],
+["burned-out","adj.","B2","ˌbɝːndˈaʊt","ˌbɜːndˈaʊt","exhausted from too much work stress","過勞倦怠的","He felt burned-out after back-to-back launches."],
+["deadline","n.","B1","ˈded.laɪn","","the time by which work must be finished","截止期限","The deadline got moved up a week."],
+["sprint","n.","B2","sprɪnt","","a short fixed period of focused work","衝刺週期","We plan the next sprint every Monday."],
+["stakeholder","n.","B2","ˈsteɪkˌhoʊl.dɚ","ˈsteɪkˌhəʊl.də","a person with an interest in a project","利害關係人","Share the mockups with all stakeholders."],
+["milestone","n.","B2","ˈmaɪl.stoʊn","ˈmaɪl.stəʊn","an important stage in a project","里程碑","Beta release is our next milestone."],
+["workflow","n.","B2","ˈwɝːk.floʊ","ˈwɜːk.fləʊ","the sequence of steps in how work gets done","工作流程","This plugin really speeds up my workflow."],
+["roadmap","n.","B2","ˈroʊd.mæp","ˈrəʊd.mæp","a plan showing what will be built and when","產品藍圖","Dark mode is on the roadmap for Q3."],
+["standup","n.","B2","ˈstænd.ʌp","","a short daily team meeting","每日站會","Keep your standup update under a minute."],
+["budget","n.","B1","ˈbʌdʒ.ɪt","","the amount of money available for something","預算","There's no budget for custom photography."],
+["workload","n.","B2","ˈwɝːk.loʊd","ˈwɜːk.ləʊd","the amount of work someone has to do","工作量","My workload doubled after the reorg."],
+["colleague","n.","A2","ˈkɑː.liːɡ","ˈkɒl.iːɡ","a person you work with","同事","A colleague showed me this shortcut."],
+["launch","n.","B1","lɑːntʃ","lɔːntʃ","the moment a product is released","上市；發布","The launch went smoother than expected."],
+["scope","n.","B2","skoʊp","skəʊp","the agreed size and limits of a project","專案範圍","That request is outside the scope."],
+["bandwidth","n.","B2","ˈbænd.wɪdθ","","the time and energy you have available","餘裕；時間心力","I don't have bandwidth for another project."],
+["quarter","n.","B1","ˈkwɔːr.t̬ɚ","ˈkwɔː.tə","a three-month business period","季度","We hit our goals for the quarter."],
+["asynchronously","adv.","B2","eɪˈsɪŋ.krə.nəs.li","","not at the same time; each at their own pace","非同步地","We mostly communicate asynchronously on Slack."],
+["efficiently","adv.","B1","ɪˈfɪʃ.ənt.li","","without wasting time or effort","有效率地","The new tool lets us ship more efficiently."],
+["currently","adv.","B1","ˈkɝː.ənt.li","ˈkʌr.ənt.li","at the present time","目前","We're currently hiring two engineers."],
+["ideally","adv.","B2","aɪˈdiː.ə.li","","in a perfect situation","理想上","Ideally, we'd test with real users first."],
+["roughly","adv.","B1","ˈrʌf.li","","approximately, not exactly","大約","It'll take roughly two sprints."],
+["accordingly","adv.","B2","əˈkɔːr.dɪŋ.li","əˈkɔː.dɪŋ.li","in a way that suits the situation","相應地","Priorities changed, so we replanned accordingly."]
+]);
+
+const $=id=>document.getElementById(id);
+const posGroup=p=>(p==="v."||p==="phr. v.")?"v":p==="adj."?"adj":p==="n."?"n":"adv";
+const POS_LABELS={all:"全部",v:"動詞",adj:"形容詞",n:"名詞",adv:"副詞"};
+
+function rowsOf(tab,fil){
+  const e=V.find(x=>x.tab===tab&&x.fil===fil);
+  return e?e.rows:[];
+}
+function allWordsCount(){let t=0;V.forEach(e=>t+=e.rows.length);return t;}
+function countOf(w){return progress[w]||0;}
+function masteredIn(tab,fil){return rowsOf(tab,fil).filter(r=>countOf(r[0])>=7).length;}
+function totalMastered(){let t=0;V.forEach(e=>e.rows.forEach(r=>{if(countOf(r[0])>=7)t++;}));return t;}
+
+function playAudio(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.85; 
+  window.speechSynthesis.speak(utterance);
+}
+
+function renderAll(){renderTabs();renderFilters();renderPos();renderTop();renderMain();}
+
+function renderTop(){
+  $("totalStat").innerHTML="已熟記 <b>"+totalMastered()+"</b> / "+allWordsCount()+" 字";
+  $("modeBtn").textContent=state.mode==="list"?"閃卡模式":"回到列表";
+}
+function renderTabs(){
+  const el=$("tabs");el.innerHTML="";
+  Object.keys(META).forEach(t=>{
+    const b=document.createElement("button");
+    b.className="tab"+(state.tab===t?" on":"");
+    b.textContent=META[t].label;
+    b.onclick=()=>{state.tab=t;state.fil=Object.keys(META[t].filters)[0];resetFlash();renderAll();};
+    el.appendChild(b);
+  });
+}
+function renderFilters(){
+  const el=$("filChips");el.innerHTML="";
+  const fs=META[state.tab].filters;
+  Object.keys(fs).forEach(f=>{
+    const b=document.createElement("button");
+    b.className="chip"+(state.fil===f?" on":"");
+    b.innerHTML=`<span>${fs[f]}</span><span class="n en-text">${masteredIn(state.tab,f)}/${rowsOf(state.tab,f).length}</span>`;
+    b.onclick=()=>{state.fil=f;resetFlash();renderAll();};
+    el.appendChild(b);
+  });
+}
+function renderPos(){
+  const el=$("posChips");el.innerHTML="";
+  Object.keys(POS_LABELS).forEach(p=>{
+    const b=document.createElement("button");
+    b.className="chip"+(state.pos===p?" on":"");
+    b.textContent=POS_LABELS[p];
+    b.onclick=()=>{state.pos=p;resetFlash();renderAll();};
+    el.appendChild(b);
+  });
+}
+function visibleRows(){
+  let rows=rowsOf(state.tab,state.fil);
+  if(state.pos!=="all")rows=rows.filter(r=>posGroup(r[1])===state.pos);
+  if(state.q){
+    const q=state.q.toLowerCase();
+    rows=rows.filter(r=>r[0].toLowerCase().includes(q)||r[6].includes(state.q));
+  }
+  if(state.hideDone&&state.mode==="list")rows=rows.filter(r=>countOf(r[0])<7);
+  return rows;
+}
+function ipaHTML(r){
+  let h=`<b>US</b><span class="en-text">/${r[3]}/</span>`;
+  if(r[4])h+=`<b>UK</b><span class="en-text">/${r[4]}/</span>`;
+  return h;
+}
+function dotsHTML(w){
+  const c=countOf(w);
+  let h='<div class="progress-area"><div class="dots" data-w="'+encodeURIComponent(w)+'">';
+  for(let i=0;i<7;i++)h+=`<button class="dot${i<c?" on":""}" data-i="${i}" aria-label="第${i+1}次"></button>`;
+  h+=`</div>`;
+  if(c>=7)h+='<span class="mastered-badge">✓ 已熟記</span>';
+  return h+"</div>";
+}
+function renderFilterHead(total){
+  const done=masteredIn(state.tab,state.fil);
+  const pct=total?Math.round(done/rowsOf(state.tab,state.fil).length*100):0;
+  $("filHead").innerHTML=`
+    <div class="filter-head-top">
+        <h2>${META[state.tab].filters[state.fil]}</h2>
+        <span class="prog-text en-text">${done} / ${rowsOf(state.tab,state.fil).length}</span>
+    </div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+  `;
+}
+
+function renderMain(){
+  $("listTools").style.display=state.mode==="list"?"flex":"none";
+  $("filHead").style.display=state.mode==="list"?"flex":"none";
+  $("footerNote").style.display=state.mode==="list"?"block":"none";
+  if(state.mode==="list")renderList();else renderFlash();
+}
+function renderList(){
+  const rows=visibleRows();
+  renderFilterHead(rows.length);
+  const main=$("main");
+  if(!rows.length){main.innerHTML='<div class="empty">沒有符合的單字。</div>';return;}
+  let h="";
+  rows.forEach(r=>{
+    const done=countOf(r[0])>=7;
+    let lvlColor = r[2] === 'A2' ? 'var(--lv-A2)' : (r[2] === 'B1' ? 'var(--lv-B1)' : 'var(--lv-B2)');
+    
+    h+=`<article class="card ${done?"done":""}">
+          <div class="card-content">
+              <div class="def-zh-main">${r[6]}</div>
+              <div class="en-group">
+                  <span class="word-en en-text" style="color: ${lvlColor}">${r[0]}</span>
+                  <button class="btn-speak" data-w="${encodeURIComponent(r[0])}" aria-label="聆聽發音">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06zM18.584 5.106a.75.75 0 011.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 11-1.06-1.06 8.25 8.25 0 000-11.668.75.75 0 010-1.06z"/><path d="M15.932 7.757a.75.75 0 011.061 0 4.5 4.5 0 010 6.364.75.75 0 01-1.06-1.06 3 3 0 000-4.243.75.75 0 010-1.061z"/></svg>
+                  </button>
+                  <span class="pos en-text">${r[1]}</span>
+                  <span class="lv ${r[2]} en-text">${r[2]}</span>
+              </div>
+              <div class="ipa">${ipaHTML(r)}</div>
+              <div class="def-en en-text">${r[5]}</div>
+              <div class="ex en-text">${r[7]}</div>
+          </div>
+          ${dotsHTML(r[0])}
+        </article>`;
+  });
+  main.innerHTML=h;
+}
+
+$("main").addEventListener("click",ev=>{
+  const speakBtn = ev.target.closest(".btn-speak");
+  if(speakBtn) {
+    ev.stopPropagation(); 
+    const w = decodeURIComponent(speakBtn.dataset.w);
+    playAudio(w);
+    return;
+  }
+
+  const d=ev.target.closest(".dot");
+  if(!d||state.mode!=="list")return;
+  const wrap=d.closest(".dots");
+  const w=decodeURIComponent(wrap.dataset.w);
+  const i=+d.dataset.i;
+  const c=countOf(w);
+  progress[w]=(c===i+1)?i:i+1;   
+  save();
+  renderFilters();renderTop();renderList();
+});
+
+function resetFlash(){flash.order=[];flash.i=0;flash.flipped=false;}
+function buildFlash(){
+  const rows=visibleRows().filter(r=>countOf(r[0])<7);
+  flash.rows=rows.slice();
+  for(let i=flash.rows.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[flash.rows[i],flash.rows[j]]=[flash.rows[j],flash.rows[i]];}
+  flash.i=0;flash.flipped=false;
+}
+function renderFlash(){
+  if(!flash.rows||!flash.rows.length)buildFlash();
+  const main=$("main");
+  const rows=flash.rows;
+  
+  if(!rows.length){main.innerHTML='<div class="empty">這個範圍目前沒有需要練習的單字囉！</div>';return;}
+  
+  if(flash.i>=rows.length){
+    main.innerHTML=`
+      <div class="flash-container">
+        <div class="fcard" style="min-height: 300px; text-align:center;">
+          <h2 style="font-size:2rem; font-weight:900; margin-bottom:12px; color:var(--text-dark);">本輪完成 🎉</h2>
+          <p style="color:var(--text-gray); font-weight:600;">共複習了 <span class="en-text" style="color:var(--theme-purple); font-weight:800;">${rows.length}</span> 張卡片</p>
+        </div>
+        <div class="fbtns">
+          <button class="fbtn" id="backList">返回列表</button>
+          <button class="fbtn know" id="again">再來一輪</button>
+        </div>
+      </div>`;
+    $("again").onclick=()=>{buildFlash();renderFlash();};
+    $("backList").onclick=()=>{state.mode="list";renderTop();renderMain();};
+    return;
+  }
+  
+  const r=rows[flash.i];
+  const c=countOf(r[0]);
+  let inner = '';
+  
+  if(!flash.flipped){
+    inner = `
+      <div class="fc-content fc-front">
+        <div class="word-zh-large">${r[6]}</div>
+        <div class="fc-hint">點擊翻看英文解答</div>
+      </div>
+    `;
+  }else{
+    inner = `
+      <div class="fc-content fc-back">
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 8px;">
+            <div class="word-en-ans en-text" style="margin-bottom: 0;">${r[0]}</div>
+            <button class="btn-speak" data-w="${encodeURIComponent(r[0])}" aria-label="聆聽發音">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06zM18.584 5.106a.75.75 0 011.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 11-1.06-1.06 8.25 8.25 0 000-11.668.75.75 0 010-1.06z"/><path d="M15.932 7.757a.75.75 0 011.061 0 4.5 4.5 0 010 6.364.75.75 0 01-1.06-1.06 3 3 0 000-4.243.75.75 0 010-1.061z"/></svg>
+            </button>
+        </div>
+        <div class="ipa" style="margin-bottom:4px;">${ipaHTML(r)}</div>
+        <div class="pos-lv">
+            <span class="pos en-text">${r[1]}</span>
+            <span class="lv ${r[2]} en-text">${r[2]}</span>
+        </div>
+        <div class="def-en en-text">${r[5]}</div>
+        <div class="ex en-text">${r[7]}</div>
+      </div>
+    `;
+  }
+  
+  let dotsHTML = '<div style="display:flex; gap:6px; margin-top:20px;">';
+  for(let i=0;i<7;i++){
+      dotsHTML += `<div style="width:16px; height:8px; border-radius:99px; background:${i<c ? 'var(--dot-filled)' : 'var(--dot-empty)'}"></div>`;
+  }
+  dotsHTML += '</div>';
+
+  main.innerHTML= `
+    <div class="flash-container">
+      <div class="fprog en-text">${flash.i+1} / ${rows.length}</div>
+      <div class="fcard-wrap">
+          <div class="fcard" id="fcard" role="button" tabindex="0">
+              ${inner}
+          </div>
+      </div>
+      ${flash.flipped ? dotsHTML : ''}
+      <div class="fbtns" style="opacity: ${flash.flipped ? '1' : '0'}; pointer-events: ${flash.flipped ? 'auto' : 'none'};">
+        <button class="fbtn" id="fno">忘記了</button>
+        <button class="fbtn know" id="fyes">記得 <span class="en-text">+1</span></button>
+      </div>
+      <div class="fnav">
+        <button id="fshuffle">↺ 重新洗牌</button>
+      </div>
+    </div>`;
+    
+  const card=$("fcard");
+  const flip=()=>{flash.flipped=!flash.flipped;renderFlash();};
+  card.onclick = (e) => {
+      if(e.target.closest('.fbtn') || e.target.closest('.btn-speak')) return;
+      flip();
+  };
+  card.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}};
+  
+  if(flash.flipped) {
+      $("fno").onclick=(e)=>{e.stopPropagation(); flash.i++;flash.flipped=false;renderFlash();};
+      $("fyes").onclick=(e)=>{
+        e.stopPropagation();
+        const w=r[0];progress[w]=Math.min(7,countOf(w)+1);save();
+        flash.i++;flash.flipped=false;
+        renderFilters();renderTop();renderFlash();
+      };
+  }
+  $("fshuffle").onclick=()=>{buildFlash();renderFlash();};
+}
+
+$("modeBtn").onclick=()=>{
+  state.mode=state.mode==="list"?"flash":"list";
+  if(state.mode==="flash")buildFlash();
+  renderTop();renderMain();
+};
+
+$("resetBtn").onclick=()=>{ $("customModal").style.display="flex"; };
+$("modalCancel").onclick=()=>{ $("customModal").style.display="none"; };
+$("modalConfirm").onclick=()=>{
+  progress={};save();renderAll();
+  $("customModal").style.display="none";
+};
+$("customModal").onclick=(e)=>{ if(e.target === $("customModal")) $("customModal").style.display="none"; }
+
+$("search").addEventListener("input",e=>{state.q=e.target.value.trim();renderMain();});
+$("hideDone").addEventListener("change",e=>{state.hideDone=e.target.checked;renderMain();});
+
+initFirebase();
+
+// 剩下的單字庫資料載入...
+setTimeout(()=>{
+W("hobby","cook",[
+["chop","v.","A2","tʃɑːp","tʃɒp","to cut something into pieces with a knife","切；剁","Chop the onion into small pieces."],
+["slice","v.","B1","slaɪs","","to cut something into thin flat pieces","切片","Slice the tomatoes as thinly as you can."],
+["dice","v.","B2","daɪs","","to cut food into small cubes","切丁","Dice the carrots before adding them."],
+["stir","v.","A2","stɝː","stɜː","to mix something by moving a spoon around","攪拌","Stir the sauce so it doesn't stick."],
+["simmer","v.","B2","ˈsɪm.ɚ","ˈsɪm.ə","to cook gently just below boiling","小火慢燉","Let the soup simmer for twenty minutes."],
+["sauté","v.","B2","sɔːˈteɪ","ˈsəʊ.teɪ","to fry quickly in a little hot oil","嫩煎；快炒","Sauté the garlic until it smells amazing."],
+["marinate","v.","B2","ˈmer.ə.neɪt","ˈmær.ɪ.neɪt","to soak food in sauce before cooking","醃漬","Marinate the chicken overnight for more flavor."],
+["sear","v.","B2","sɪr","sɪə","to fry the surface quickly at high heat","大火煎上色","Sear the steak two minutes per side."],
+["whisk","v.","B2","wɪsk","","to beat eggs or cream quickly with air","打發；快攪","Whisk the eggs until they're fluffy."],
+["knead","v.","B2","niːd","","to press and fold dough with your hands","揉（麵團）","Knead the dough for about ten minutes."],
+["grill","v.","B1","ɡrɪl","","to cook food over or under direct heat","燒烤","We grilled corn and peppers outside."],
+["roast","v.","B1","roʊst","rəʊst","to cook food in an oven with dry heat","烘烤","I roasted a whole chicken on Sunday."],
+["steam","v.","B1","stiːm","","to cook food over boiling water","蒸","Steam the fish with ginger and scallions."],
+["drizzle","v.","B2","ˈdrɪz.əl","","to pour a thin stream of liquid over food","淋上","Drizzle olive oil over the salad."],
+["garnish","v.","B2","ˈɡɑːr.nɪʃ","ˈɡɑː.nɪʃ","to decorate a dish with a little food","擺盤點綴","Garnish the soup with fresh coriander."],
+["crispy","adj.","B1","ˈkrɪs.pi","","pleasantly hard and crunchy outside","酥脆的","The skin came out perfectly crispy."],
+["tender","adj.","B2","ˈten.dɚ","ˈten.də","soft and easy to cut or chew","軟嫩的","Slow cooking makes the beef so tender."],
+["savory","adj.","B2","ˈseɪ.vɚ.i","ˈseɪ.vər.i","tasting of salt or spice, not sweet","鹹香的","I prefer a savory breakfast to a sweet one."],
+["spicy","adj.","A2","ˈspaɪ.si","","containing strong hot flavors","辣的","Thai food can be seriously spicy."],
+["bland","adj.","B2","blænd","","having very little taste","淡而無味的","The rice was fine but a bit bland."],
+["juicy","adj.","B1","ˈdʒuː.si","","full of liquid and flavor","多汁的","Rest the meat so it stays juicy."],
+["chewy","adj.","B2","ˈtʃuː.i","","needing a lot of chewing","有嚼勁的","These noodles have a nice chewy texture."],
+["creamy","adj.","B1","ˈkriː.mi","","smooth and thick like cream","滑順濃郁的","The pasta sauce is rich and creamy."],
+["greasy","adj.","B1","ˈɡriː.si","","containing too much oil or fat","油膩的","The fries were a little too greasy."],
+["fluffy","adj.","B2","ˈflʌf.i","","soft, light and full of air","鬆軟的","These pancakes are incredibly fluffy."],
+["golden","adj.","B1","ˈɡoʊl.dən","ˈɡəʊl.dən","cooked to a beautiful yellow-brown color","金黃色的","Fry until the edges turn golden."],
+["smoky","adj.","B2","ˈsmoʊ.ki","ˈsməʊ.ki","tasting of smoke from fire or grilling","煙燻味的","Paprika adds a lovely smoky note."],
+["tangy","adj.","B2","ˈtæŋ.i","","pleasantly sharp and slightly sour","酸香開胃的","The dressing is tangy with lime juice."],
+["hearty","adj.","B2","ˈhɑːr.t̬i","ˈhɑː.ti","large, warm and satisfying","豐盛暖胃的","Nothing beats a hearty stew in winter."],
+["al dente","adj.","B2","ˌɑːlˈden.teɪ","ˌælˈden.teɪ","cooked so it is still firm when bitten","彈牙的","Cook the pasta al dente, not soft."],
+["recipe","n.","A2","ˈres.ə.pi","","instructions for cooking a dish","食譜","I found this recipe on a food blog."],
+["ingredient","n.","B1","ɪnˈɡriː.di.ənt","","one of the foods used to make a dish","食材","It only needs five ingredients."],
+["dough","n.","B1","doʊ","dəʊ","a soft mix of flour and water for baking","麵團","Let the dough rise for an hour."],
+["broth","n.","B2","brɑːθ","brɒθ","a thin soup made from meat or vegetables","高湯","The ramen broth simmered all day."],
+["seasoning","n.","B1","ˈsiː.zən.ɪŋ","","salt, spices and herbs added to food","調味料","Taste it and adjust the seasoning."],
+["texture","n.","B2","ˈteks.tʃɚ","ˈteks.tʃə","the way food feels in your mouth","口感","Toasted nuts add texture to the salad."],
+["portion","n.","B1","ˈpɔːr.ʃən","ˈpɔː.ʃən","the amount of food for one person","一人份；份量","The portions there are huge."],
+["leftovers","n.","B1","ˈleftˌoʊ.vɚz","ˈleftˌəʊ.vəz","food remaining after a meal","剩菜","Tomorrow's lunch is tonight's leftovers."],
+["pinch","n.","B1","pɪntʃ","","a tiny amount you hold between two fingers","一小撮","Add a pinch of salt to the caramel."],
+["flavor","n.","B1","ˈfleɪ.vɚ","ˈfleɪ.və","the particular taste of a food","風味","Browning the butter deepens the flavor."],
+["batch","n.","B2","bætʃ","","an amount of food made at one time","一批（餐食）","I baked a fresh batch of cookies."],
+["skillet","n.","B2","ˈskɪl.ɪt","","a heavy frying pan","平底鍋","Heat the skillet until it's smoking hot."],
+["cuisine","n.","B2","kwɪˈziːn","","the cooking style of a country or region","料理；菜系","I've been exploring Sichuan cuisine lately."],
+["staple","n.","B2","ˈsteɪ.pəl","","a basic food you use all the time","主食；常備食材","Rice and eggs are staples in my kitchen."],
+["thinly","adv.","B1","ˈθɪn.li","","in thin pieces or layers","薄薄地","Thinly slice the cucumber for the salad."],
+["finely","adv.","B2","ˈfaɪn.li","","into very small pieces","細細地","Finely chop the garlic and ginger."],
+["evenly","adv.","B2","ˈiː.vən.li","","equally across the whole surface","均勻地","Spread the sauce evenly over the base."],
+["gently","adv.","B1","ˈdʒent.li","","softly and carefully","輕柔地","Gently fold the cream into the batter."],
+["thoroughly","adv.","B2","ˈθɝː.oʊ.li","ˈθʌr.ə.li","completely and carefully","徹底地","Wash the leeks thoroughly to remove sand."],
+["overnight","adv.","B1","ˌoʊ.vɚˈnaɪt","ˌəʊ.vəˈnaɪt","through the whole night","過夜地","Soak the beans overnight before cooking."]
+]);
+W("hobby","boulder",[
+["grip","v.","B1","ɡrɪp","","to hold something very tightly","緊握","Grip the edge and pull through."],
+["reach","v.","A2","riːtʃ","","to stretch out your arm to touch something","伸手搆到","I couldn't quite reach the next hold."],
+["swing","v.","B1","swɪŋ","","to move through the air holding a fixed point","擺盪","Swing your hips into the wall."],
+["balance","v.","B1","ˈbæl.əns","","to keep your body steady without falling","保持平衡","Balance on your left foot, then stand up."],
+["slip","v.","B1","slɪp","","to slide accidentally and lose your footing","滑掉；打滑","My foot slipped off the tiny hold."],
+["spot","v.","B2","spɑːt","spɒt","to stand ready to protect a falling climber","保護落地","Can you spot me on this one?"],
+["send","v.","B2","send","","to climb a route successfully to the top","完攀","She finally sent her first V5!"],
+["traverse","v.","B2","trəˈvɝːs","trəˈvɜːs","to climb sideways across a wall","橫渡","Traverse left before you head up."],
+["hang","v.","B1","hæŋ","","to hold on with your body below your hands","懸掛","Just hang straight-armed and rest."],
+["warm up","phr. v.","B1","ˌwɔːrmˈʌp","ˌwɔːmˈʌp","to prepare your body with easy exercise","熱身","Warm up on the easy slab first."],
+["chalk up","phr. v.","B2","ˌtʃɑːkˈʌp","ˌtʃɔːkˈʌp","to put chalk powder on your hands","上鎂粉","Chalk up before the crux move."],
+["commit","v.","B2","kəˈmɪt","","to go for a move fully without hesitating","果斷出手","You have to commit to the jump."],
+["stick","v.","B2","stɪk","","to catch and hold a difficult move","抓穩；黏住","He stuck the dyno on the third try."],
+["flash","v.","B2","flæʃ","","to finish a climb on the very first try","一次完攀","I flashed the orange problem yesterday."],
+["project","v.","B2","ˈprɑː.dʒekt","ˈprɒdʒ.ekt","to work on one hard climb over many sessions","長期攻克","I've been projecting this roof for weeks."],
+["steep","adj.","B1","stiːp","","rising at a sharp angle","陡的","The steep section pumps your arms fast."],
+["overhanging","adj.","B2","ˌoʊ.vɚˈhæŋ.ɪŋ","ˌəʊ.vəˈhæŋ.ɪŋ","leaning out over your head","仰角的","The overhanging wall needs core strength."],
+["dynamic","adj.","B2","daɪˈnæm.ɪk","","using jumping, swinging movement","動態的","It's a dynamic move to a far jug."],
+["powerful","adj.","B1","ˈpaʊ.ɚ.fəl","ˈpaʊə.fəl","needing a lot of physical strength","需要爆發力的","The start is short but powerful."],
+["sore","adj.","B1","sɔːr","sɔː","painful from too much exercise","痠痛的","My forearms are so sore today."],
+["grippy","adj.","B2","ˈɡrɪp.i","","providing good friction to hold onto","抓地力好的","New shoes feel amazingly grippy."],
+["polished","adj.","B2","ˈpɑː.lɪʃt","ˈpɒl.ɪʃt","worn smooth and slippery by many climbers","被磨滑的","The footholds are polished from years of use."],
+["crimpy","adj.","B2","ˈkrɪm.pi","","full of very small edges for fingertips","多小點的","It's a crimpy face climb, hard on the skin."],
+["tricky","adj.","B1","ˈtrɪk.i","","difficult in a clever, puzzling way","刁鑽的","The topout is trickier than it looks."],
+["pumped","adj.","B2","pʌmpt","","with forearms swollen and tired from climbing","前臂充血無力的","I was too pumped to hold the finish."],
+["awkward","adj.","B2","ˈɑː.kwɚd","ˈɔː.kwəd","uncomfortable and hard to do smoothly","彆扭的","There's an awkward knee move in the middle."],
+["solid","adj.","B2","ˈsɑː.lɪd","ˈsɒl.ɪd","strong, secure and dependable","穩固的","Get a solid heel hook before reaching."],
+["stiff","adj.","B2","stɪf","","harder than the grade suggests","（難度）偏硬的","That V4 felt pretty stiff to me."],
+["exposed","adj.","B2","ɪkˈspoʊzd","ɪkˈspəʊzd","high up with a scary feeling of open space","暴露感強的","The top feels exposed even with mats."],
+["sketchy","adj.","B2","ˈsketʃ.i","","feeling unsafe or unreliable","不穩的；危險的","The landing looks a bit sketchy."],
+["hold","n.","B1","hoʊld","həʊld","a shaped piece you grip on a climbing wall","岩點","The purple holds are tiny this week."],
+["crimp","n.","B2","krɪmp","","a very small edge held with fingertips","小指力點","There's one brutal crimp at the crux."],
+["sloper","n.","B2","ˈsloʊ.pɚ","ˈsləʊ.pə","a rounded hold with no edge to grip","斜面點","Slopers depend on friction and body position."],
+["jug","n.","B2","dʒʌɡ","","a large easy hold you can wrap your hand around","大把手點","Thank goodness there's a jug at the top."],
+["route","n.","B1","ruːt","","a planned line of holds up a wall","路線","They set new routes every Tuesday."],
+["problem","n.","B2","ˈprɑː.bləm","ˈprɒb.ləm","a single boulder climb to be solved","抱石路線","This problem suits tall climbers."],
+["crash pad","n.","B2","ˈkræʃ ˌpæd","","a thick mat that softens climbing falls","抱石墊","Drag the crash pad under the roof."],
+["chalk","n.","B1","tʃɑːk","tʃɔːk","white powder that keeps hands dry","鎂粉","My chalk bag is almost empty."],
+["grade","n.","B2","ɡreɪd","","the difficulty level of a climb","難度等級","What grade is the black one?"],
+["beta","n.","B2","ˈbeɪ.t̬ə","ˈbiː.tə","advice about how to do a climb's moves","攻略；解法","She gave me the beta for the sit start."],
+["volume","n.","B2","ˈvɑːl.juːm","ˈvɒl.juːm","a large wooden shape added to a climbing wall","大型造型岩塊","Smear your foot on the big volume."],
+["footwork","n.","B2","ˈfʊt.wɝːk","ˈfʊt.wɜːk","the skill of placing your feet well","腳法","Quiet footwork saves so much energy."],
+["spotter","n.","B2","ˈspɑː.t̬ɚ","ˈspɒt.ə","a person who protects a falling climber","保護者","Always climb highballs with a spotter."],
+["session","n.","B1","ˈseʃ.ən","","a period of time spent doing an activity","一次訓練","Great session tonight—three new sends."],
+["barely","adv.","B2","ˈber.li","ˈbeə.li","only just; almost not","勉強地","I barely held the last move."],
+["smoothly","adv.","B1","ˈsmuːð.li","","without sudden stops or shaking","流暢地","She moves so smoothly on slab."],
+["firmly","adv.","B1","ˈfɝːm.li","ˈfɜːm.li","strongly and without moving","牢牢地","Press firmly through your toes."],
+["upward","adv.","B1","ˈʌp.wɚd","ˈʌp.wəd","toward a higher position","向上地","Drive upward from your legs, not arms."],
+["sideways","adv.","B1","ˈsaɪd.weɪz","","to or toward the side","側向地","Shift sideways before the big reach."],
+["precisely","adv.","B2","prɪˈsaɪ.sli","","exactly and accurately","精準地","Place your toe precisely on the chip."]
+]);
+W("hobby","hike",[
+["ascend","v.","B2","əˈsend","","to climb or go up","攀升","We ascended slowly through the fog."],
+["descend","v.","B2","dɪˈsend","","to go down","下降","My knees hate descending steep steps."],
+["trek","v.","B2","trek","","to walk a long distance in wild country","長途跋涉","They trekked for five days in Nepal."],
+["wander","v.","B1","ˈwɑːn.dɚ","ˈwɒn.də","to walk slowly with no fixed direction","漫步","We wandered off to find the waterfall."],
+["scramble","v.","B2","ˈskræm.bəl","","to climb using both hands and feet","手腳並用攀爬","You have to scramble over boulders near the top."],
+["summit","v.","B2","ˈsʌm.ɪt","","to reach the top of a mountain","登頂","We summited just before sunrise."],
+["pace","v.","B2","peɪs","","to control your speed so you can last","調配速度","Pace yourself—it's a long climb."],
+["refill","v.","B1","ˌriːˈfɪl","","to fill a container again","補充（水）","Refill your bottles at the last stream."],
+["stumble","v.","B2","ˈstʌm.bəl","","to almost fall while walking","絆到；踉蹌","I stumbled on a root and caught myself."],
+["detour","v.","B2","ˈdiː.tʊr","ˈdiː.tʊə","to take a longer, different way","繞路","We detoured around the flooded section."],
+["acclimatize","v.","B2","əˈklaɪ.mə.taɪz","","to get used to high altitude or a new climate","適應高度","Spend a day acclimatizing before the big climb."],
+["overtake","v.","B2","ˌoʊ.vɚˈteɪk","ˌəʊ.vəˈteɪk","to pass someone moving in the same direction","超越","A trail runner overtook us effortlessly."],
+["push on","phr. v.","B2","ˌpʊʃˈɑːn","ˌpʊʃˈɒn","to continue despite tiredness","繼續前進","We pushed on to the hut before dark."],
+["set off","phr. v.","B1","ˌsetˈɑːf","ˌsetˈɒf","to begin a journey","出發","We set off at five to beat the heat."],
+["cool down","phr. v.","B1","ˌkuːlˈdaʊn","","to let your body relax after exercise","緩和收操","Stretch a little to cool down after the hike."],
+["scenic","adj.","B1","ˈsiː.nɪk","","having beautiful natural views","風景優美的","We took the scenic route along the ridge."],
+["rugged","adj.","B2","ˈrʌɡ.ɪd","","wild, rocky and uneven","崎嶇的","The coastline there is beautifully rugged."],
+["muddy","adj.","A2","ˈmʌd.i","","covered in soft wet earth","泥濘的","The trail gets muddy after rain."],
+["rocky","adj.","B1","ˈrɑː.ki","ˈrɒk.i","covered with rocks","多岩石的","Watch your ankles on the rocky section."],
+["breathtaking","adj.","B2","ˈbreθˌteɪ.kɪŋ","","extremely impressive or beautiful","令人屏息的","The view from the saddle is breathtaking."],
+["secluded","adj.","B2","sɪˈkluː.dɪd","","quiet, private and away from people","僻靜的","We found a secluded spot for lunch."],
+["misty","adj.","B1","ˈmɪs.ti","","covered with light fog","霧濛濛的","The forest looks magical on misty mornings."],
+["gradual","adj.","B2","ˈɡrædʒ.u.əl","","happening slowly, little by little","平緩漸進的","The first hour is a gradual climb."],
+["endless","adj.","B1","ˈend.ləs","","seeming to have no end","沒有盡頭的","Those switchbacks felt endless."],
+["well-marked","adj.","B2","ˌwelˈmɑːrkt","ˌwelˈmɑːkt","having clear signs showing the way","路標清楚的","The trail is well-marked the whole way."],
+["slippery","adj.","B1","ˈslɪp.ɚ.i","ˈslɪp.ər.i","smooth or wet and easy to slide on","濕滑的","The wooden steps are slippery when wet."],
+["panoramic","adj.","B2","ˌpæn.əˈræm.ɪk","","showing a wide view in all directions","全景的","The tower offers a panoramic view of the valley."],
+["alpine","adj.","B2","ˈæl.paɪn","","relating to high mountains","高山的","Alpine meadows bloom in early summer."],
+["strenuous","adj.","B2","ˈstren.ju.əs","","needing a lot of physical effort","費力的","It's a strenuous eight-hour round trip."],
+["lush","adj.","B2","lʌʃ","","green and growing thickly","蒼翠茂密的","The valley floor is lush after the rains."],
+["trail","n.","B1","treɪl","","a path through countryside or forest","步道","This trail loops back to the parking lot."],
+["ridge","n.","B2","rɪdʒ","","a long narrow top of a mountain","稜線","We walked the ridge with views on both sides."],
+["peak","n.","B1","piːk","","the pointed top of a mountain","山峰","You can see three peaks from here."],
+["valley","n.","A2","ˈvæl.i","","low land between hills or mountains","山谷","Clouds filled the valley below us."],
+["trailhead","n.","B2","ˈtreɪl.hed","","the starting point of a trail","登山口","We reached the trailhead at dawn."],
+["elevation","n.","B2","ˌel.əˈveɪ.ʃən","","height above sea level","海拔高度","The hut sits at an elevation of 3,000 meters."],
+["altitude","n.","B2","ˈæl.tə.tuːd","ˈæl.tɪ.tjuːd","the height of a place, especially when very high","（高）海拔","Some people feel dizzy at altitude."],
+["viewpoint","n.","B1","ˈvjuː.pɔɪnt","","a place with a good view","觀景點","There's a viewpoint halfway up."],
+["terrain","n.","B2","təˈreɪn","","the type of land you travel across","地形","The terrain changes from forest to scree."],
+["blister","n.","B2","ˈblɪs.tɚ","ˈblɪs.tə","a painful bubble on skin from rubbing","水泡","New boots gave me a blister on day one."],
+["daypack","n.","B2","ˈdeɪ.pæk","","a small backpack for one-day trips","單日登山包","Just bring a daypack with water and snacks."],
+["switchback","n.","B2","ˈswɪtʃ.bæk","","a zigzag turn in a steep trail","之字形山路","Count the switchbacks to track your progress."],
+["shade","n.","B1","ʃeɪd","","an area protected from direct sun","陰涼處","We rested in the shade of a huge cedar."],
+["stamina","n.","B2","ˈstæm.ə.nə","","the energy to keep going for a long time","耐力","Long climbs build serious stamina."],
+["uphill","adv.","B1","ˌʌpˈhɪl","","toward the top of a slope","往上坡地","It's uphill all the way to the temple."],
+["steadily","adv.","B2","ˈsted.əl.i","","at a regular, even speed","穩定地","Climb steadily and you won't burn out."],
+["halfway","adv.","B1","ˌhæfˈweɪ","ˌhɑːfˈweɪ","at the middle point","半途地","We stopped halfway for coffee."],
+["onward","adv.","B2","ˈɑːn.wɚd","ˈɒn.wəd","continuing forward","繼續向前地","From the pass, we hiked onward to the lake."],
+["briskly","adv.","B2","ˈbrɪsk.li","","quickly and with energy","輕快地","She walks briskly even on climbs."],
+["gingerly","adv.","B2","ˈdʒɪn.dʒɚ.li","ˈdʒɪn.dʒəl.i","very carefully and cautiously","小心翼翼地","We crossed the wet log gingerly."]
+]);
+W("hobby","snorkel",[
+["float","v.","A2","floʊt","fləʊt","to stay on the surface of water","漂浮","Just relax and let your body float."],
+["dive","v.","B1","daɪv","","to go down under the water","下潛","He dove down to look at the coral."],
+["drift","v.","B2","drɪft","","to be carried slowly by water or wind","隨波漂流","We drifted along with the gentle current."],
+["paddle","v.","B1","ˈpæd.əl","","to move through water with small strokes","划水","Paddle slowly so you don't scare the fish."],
+["surface","v.","B2","ˈsɝː.fɪs","ˈsɜː.fɪs","to come up to the top of the water","浮出水面","The turtle surfaced right next to us."],
+["glimpse","v.","B2","ɡlɪmps","","to see something for a very short moment","瞥見","We glimpsed a reef shark in the distance."],
+["submerge","v.","B2","səbˈmɝːdʒ","səbˈmɜːdʒ","to go completely under water","沒入水中","Submerge your mask to check for leaks."],
+["kick","v.","A2","kɪk","","to move your legs to push through water","踢水","Kick gently from your hips, not knees."],
+["equalize","v.","B2","ˈiː.kwə.laɪz","","to balance the pressure in your ears","做耳壓平衡","Equalize early and often as you go down."],
+["wade","v.","B2","weɪd","","to walk through shallow water","涉水","We waded out to the reef from the beach."],
+["glide","v.","B2","ɡlaɪd","","to move smoothly without effort","滑行","Rays glide over the sand like birds."],
+["bob","v.","B2","bɑːb","bɒb","to move gently up and down on water","上下浮動","Snorkelers bobbed on the surface above us."],
+["tread","v.","B2","tred","","to stay upright in deep water by moving your legs","踩水","Can you tread water for two minutes?"],
+["swirl","v.","B2","swɝːl","swɜːl","to move around quickly in circles","打轉；旋動","A school of sardines swirled around the rock."],
+["duck-dive","v.","B2","ˈdʌk.daɪv","","to bend at the waist and dive down head first","鴨式下潛","She duck-dived to photograph the anemone."],
+["crystal-clear","adj.","B1","ˌkrɪs.təlˈklɪr","ˌkrɪs.təlˈklɪə","perfectly clean and easy to see through","清澈見底的","The water was crystal-clear that morning."],
+["shallow","adj.","B1","ˈʃæl.oʊ","ˈʃæl.əʊ","not deep","淺的","The lagoon is shallow enough for beginners."],
+["tropical","adj.","B1","ˈtrɑː.pɪ.kəl","ˈtrɒp.ɪ.kəl","from the hottest parts of the world","熱帶的","Tropical fish came right up to my mask."],
+["vivid","adj.","B2","ˈvɪv.ɪd","","very bright and strong in color","鮮豔的","The coral colors are unbelievably vivid."],
+["calm","adj.","B1","kɑːm","","still, without big waves","平靜無浪的","Go early while the sea is calm."],
+["choppy","adj.","B2","ˈtʃɑː.pi","ˈtʃɒp.i","with lots of small rough waves","浪花碎亂的","It got choppy in the afternoon wind."],
+["underwater","adj.","B1","ˌʌn.dɚˈwɑː.t̬ɚ","ˌʌn.dəˈwɔː.tə","existing or happening below the surface","水下的","She bought an underwater camera case."],
+["marine","adj.","B2","məˈriːn","","relating to the sea and sea life","海洋的","The park protects all marine life here."],
+["graceful","adj.","B2","ˈɡreɪs.fəl","","moving in a smooth, beautiful way","優雅的","Sea turtles are surprisingly graceful."],
+["curious","adj.","B1","ˈkjʊr.i.əs","ˈkjʊə.ri.əs","interested and wanting to come closer","好奇的","A curious pufferfish followed us around."],
+["stunning","adj.","B2","ˈstʌn.ɪŋ","","extremely beautiful","美得驚人的","The drop-off is absolutely stunning."],
+["salty","adj.","A2","ˈsɑːl.ti","ˈsɒl.ti","tasting of salt","鹹的","My lips were salty for hours after."],
+["turquoise","adj.","B2","ˈtɝː.kɔɪz","ˈtɜː.kwɔɪz","greenish-blue in color","土耳其藍的","The bay glows turquoise at noon."],
+["murky","adj.","B2","ˈmɝː.ki","ˈmɜː.ki","dark and difficult to see through","混濁的","The water turns murky after storms."],
+["buoyant","adj.","B2","ˈbɔɪ.ənt","","able to float easily","浮力好的","Wetsuits make you extra buoyant."],
+["reef","n.","B2","riːf","","a line of coral or rock near the surface","礁","The reef starts thirty meters from shore."],
+["coral","n.","B1","ˈkɔːr.əl","ˈkɒr.əl","hard colorful sea structures built by tiny animals","珊瑚","Never stand on the coral."],
+["current","n.","B1","ˈkɝː.ənt","ˈkʌr.ənt","a continuous flow of water","洋流；水流","Check the current before you swim out."],
+["fins","n.","B1","fɪnz","","flat rubber shoes that help you swim","蛙鞋","Long fins make diving down easier."],
+["mask","n.","A2","mæsk","mɑːsk","the glass window you wear to see underwater","面鏡","Rinse your mask so it doesn't fog."],
+["seabed","n.","B2","ˈsiː.bed","","the floor of the sea","海床","Starfish dotted the sandy seabed."],
+["visibility","n.","B2","ˌvɪz.əˈbɪl.ə.t̬i","ˌvɪz.əˈbɪl.ə.ti","how far you can see through the water","能見度","Visibility was over twenty meters today."],
+["school","n.","B2","skuːl","","a large group of fish swimming together","魚群","A school of fusiliers swept past us."],
+["tide","n.","B1","taɪd","","the regular rise and fall of the sea","潮汐","Low tide exposes the rock pools."],
+["lagoon","n.","B2","ləˈɡuːn","","calm shallow water separated from the sea","潟湖","The lagoon is protected from big waves."],
+["wetsuit","n.","B2","ˈwet.suːt","","a tight rubber suit that keeps you warm","防寒衣","A thin wetsuit also protects against sunburn."],
+["seaweed","n.","B1","ˈsiː.wiːd","","plants that grow in the sea","海藻；海草","Fish hide in the swaying seaweed."],
+["depth","n.","B2","depθ","","the distance from the surface down","深度","At that depth the colors start to fade."],
+["shore","n.","B1","ʃɔːr","ʃɔː","the land along the edge of the sea","岸邊","We snorkeled straight from the shore."],
+["calmly","adv.","B1","ˈkɑːm.li","","without panic or hurry","冷靜地","Breathe calmly through the snorkel."],
+["effortlessly","adv.","B2","ˈef.ɚt.ləs.li","ˈef.ət.ləs.li","without any effort at all","毫不費力地","The turtle cruised past effortlessly."],
+["downward","adv.","B2","ˈdaʊn.wɚd","ˈdaʊn.wəd","toward a lower place","向下地","Angle your body downward as you kick."],
+["silently","adv.","B1","ˈsaɪ.lənt.li","","without making any sound","無聲地","A ray passed silently beneath us."],
+["afloat","adv.","B2","əˈfloʊt","əˈfləʊt","floating on water","漂浮著","The vest keeps you afloat with no effort."],
+["underneath","adv.","B1","ˌʌn.dɚˈniːθ","ˌʌn.dəˈniːθ","directly below something","在下方地","Look underneath the ledge—there's a moray!"]
+]);
+W("hobby","camp",[
+["pitch","v.","B2","pɪtʃ","","to put up a tent","搭（帳篷）","We pitched the tent before sunset."],
+["set up","phr. v.","A2","ˌsetˈʌp","","to arrange and prepare equipment","架設","It takes ten minutes to set up camp."],
+["pack","v.","A2","pæk","","to put things into bags for a trip","打包","Pack the heavy stuff at the bottom."],
+["gather","v.","B1","ˈɡæð.ɚ","ˈɡæð.ə","to collect things from different places","收集","The kids gathered sticks for the fire."],
+["toast","v.","B1","toʊst","təʊst","to heat food over fire until brown","烤（棉花糖等）","We toasted marshmallows over the embers."],
+["stargaze","v.","B2","ˈstɑːr.ɡeɪz","ˈstɑː.ɡeɪz","to look at the stars for pleasure","觀星","We stargazed until past midnight."],
+["unzip","v.","B1","ˌʌnˈzɪp","","to open something with a zipper","拉開拉鍊","I unzipped the tent to watch the sunrise."],
+["crawl","v.","B1","krɑːl","krɔːl","to move on your hands and knees","爬行","We crawled into our sleeping bags early."],
+["huddle","v.","B2","ˈhʌd.əl","","to gather close together for warmth","擠在一起","Everyone huddled around the fire."],
+["kindle","v.","B2","ˈkɪn.dəl","","to make a fire start burning","點燃","Dry bark helps kindle the fire quickly."],
+["unwind","v.","B2","ʌnˈwaɪnd","","to relax after stress or work","放鬆紓壓","Camping is how I unwind after a launch."],
+["recharge","v.","B2","ˌriːˈtʃɑːrdʒ","ˌriːˈtʃɑːdʒ","to get your energy back","充電（恢復精力）","A weekend outdoors really recharges me."],
+["curl up","phr. v.","B2","ˌkɝːlˈʌp","ˌkɜːlˈʌp","to sit or lie comfortably with legs pulled in","蜷縮窩著","I curled up in the hammock with a book."],
+["lug","v.","B2","lʌɡ","","to carry something heavy with effort","費力搬運","We lugged the cooler up from the car."],
+["air out","phr. v.","B2","ˌerˈaʊt","ˌeərˈaʊt","to let fresh air remove smells or damp","晾；通風","Air out the sleeping bags in the sun."],
+["portable","adj.","B1","ˈpɔːr.t̬ə.bəl","ˈpɔː.tə.bəl","easy to carry around","可攜帶的","We brought a portable espresso maker."],
+["waterproof","adj.","B1","ˈwɑː.t̬ɚ.pruːf","ˈwɔː.tə.pruːf","not letting water through","防水的","Is the rain fly actually waterproof?"],
+["windproof","adj.","B2","ˈwɪnd.pruːf","","blocking the wind","防風的","A windproof jacket makes cold evenings fine."],
+["damp","adj.","B1","dæmp","","slightly wet","潮濕的","Everything feels damp in the morning."],
+["chilly","adj.","B1","ˈtʃɪl.i","","uncomfortably cold","冷颼颼的","Nights get chilly even in summer."],
+["starry","adj.","B1","ˈstɑːr.i","ˈstɑː.ri","full of visible stars","滿天星斗的","It was the starriest sky I've ever seen."],
+["off-grid","adj.","B2","ˌɑːfˈɡrɪd","ˌɒfˈɡrɪd","without electricity, water supply or internet","離網的","We went fully off-grid for three days."],
+["roomy","adj.","B2","ˈruː.mi","","having plenty of space inside","寬敞的","The new tent is roomy enough for four."],
+["lightweight","adj.","B2","ˈlaɪt.weɪt","","weighing very little","輕量的","Lightweight gear makes the approach easier."],
+["sturdy","adj.","B2","ˈstɝː.di","ˈstɜː.di","strong and not easily broken","堅固耐用的","These poles are sturdy in strong wind."],
+["insulated","adj.","B2","ˈɪn.sə.leɪ.t̬ɪd","ˈɪn.sjə.leɪ.tɪd","covered with material that keeps heat in","保暖隔熱的","An insulated pad keeps ground cold away."],
+["soggy","adj.","B2","ˈsɑː.ɡi","ˈsɒɡ.i","unpleasantly wet and soft","濕透的","Our shoes were soggy after the storm."],
+["pitch-dark","adj.","B2","ˌpɪtʃˈdɑːrk","ˌpɪtʃˈdɑːk","completely dark","漆黑的","It gets pitch-dark once the fire dies."],
+["dewy","adj.","B2","ˈduː.i","ˈdjuː.i","covered with small drops of morning water","帶露水的","We packed up the dewy tent at dawn."],
+["well-equipped","adj.","B2","ˌwel.ɪˈkwɪpt","","having all the useful equipment needed","裝備齊全的","The campsite is surprisingly well-equipped."],
+["tent","n.","A2","tent","","a cloth shelter you sleep in outdoors","帳篷","Our tent survived the midnight storm."],
+["campsite","n.","B1","ˈkæmp.saɪt","","a place where people camp","營地","We booked a riverside campsite."],
+["stove","n.","B1","stoʊv","stəʊv","a small cooker used for camping","爐具","The gas stove boils water in minutes."],
+["lantern","n.","B1","ˈlæn.t̬ɚn","ˈlæn.tən","a lamp you can carry","營燈","Hang the lantern inside the tent."],
+["firewood","n.","B1","ˈfaɪr.wʊd","ˈfaɪə.wʊd","wood collected for burning","柴火","We bought a bundle of firewood at the gate."],
+["cooler","n.","B1","ˈkuː.lɚ","ˈkuː.lə","an insulated box that keeps food cold","保冰桶","The drinks stayed cold in the cooler all weekend."],
+["gear","n.","B1","ɡɪr","ɡɪə","the equipment needed for an activity","裝備","Good gear makes bad weather bearable."],
+["canopy","n.","B2","ˈkæn.ə.pi","","a cover that gives shade or shelter","天幕","We ate under the canopy when it drizzled."],
+["sleeping bag","n.","A2","ˈsliː.pɪŋ ˌbæɡ","","a warm bag you sleep in","睡袋","My sleeping bag is rated to minus five."],
+["campfire","n.","B1","ˈkæmp.faɪr","ˈkæmp.faɪə","an outdoor fire made while camping","營火","We told stories around the campfire."],
+["peg","n.","B2","peɡ","","a pin that holds a tent to the ground","營釘","Hammer the pegs in at an angle."],
+["bug spray","n.","B1","ˈbʌɡ ˌspreɪ","","liquid that keeps insects away","防蟲液","Don't forget bug spray for the evening."],
+["embers","n.","B2","ˈem.bɚz","ˈem.bəz","the hot glowing remains of a fire","餘燼","We cooked potatoes in the embers."],
+["thermos","n.","B1","ˈθɝː.məs","ˈθɜː.məs","a bottle that keeps drinks hot or cold","保溫瓶","A thermos of hot tea saved the sunrise hike."],
+["outdoors","adv.","A2","ˌaʊtˈdɔːrz","ˌaʊtˈdɔːz","outside, in the open air","在戶外地","Everything tastes better outdoors."],
+["nearby","adv.","A2","ˌnɪrˈbaɪ","ˌnɪəˈbaɪ","a short distance away","在附近地","There's a stream nearby for washing up."],
+["securely","adv.","B2","sɪˈkjʊr.li","sɪˈkjʊə.li","firmly, so nothing can move or escape","牢固地","Tie the food bag securely to a branch."],
+["snugly","adv.","B2","ˈsnʌɡ.li","","fitting closely and comfortably","舒適服貼地","The liner fits snugly inside the bag."],
+["upwind","adv.","B2","ˌʌpˈwɪnd","","in the direction the wind comes from","朝上風處地","Sit upwind of the smoke."],
+["beforehand","adv.","B2","bɪˈfɔːr.hænd","bɪˈfɔː.hænd","earlier, before something happens","事先地","Check the fire rules beforehand."]
+]);
+W("hobby","ski",[
+["carve","v.","B2","kɑːrv","kɑːv","to make clean curved turns on skis","刻滑","She carves beautiful lines on groomers."],
+["brake","v.","B1","breɪk","","to slow down or stop","煞車減速","Brake gently before the icy patch."],
+["tumble","v.","B2","ˈtʌm.bəl","","to fall suddenly, rolling over","翻滾摔倒","I tumbled twice on the mogul run."],
+["shred","v.","B2","ʃred","","to ski or snowboard fast and skillfully","帥氣馳騁","The locals were shredding the fresh powder."],
+["coast","v.","B2","koʊst","kəʊst","to move without using extra effort","滑行溜過","We coasted down the last gentle stretch."],
+["wipe out","phr. v.","B2","ˌwaɪpˈaʊt","","to fall over completely and dramatically","慘摔","He wiped out right in front of the lift."],
+["gear up","phr. v.","B2","ˌɡɪrˈʌp","ˌɡɪərˈʌp","to put on your equipment","著裝備","We geared up in the freezing parking lot."],
+["layer up","phr. v.","B2","ˌleɪ.ɚˈʌp","ˌleɪ.ərˈʌp","to wear several layers of clothes","多層穿搭","Layer up—it's minus ten at the top."],
+["plow","v.","B2","plaʊ","","to slow down with ski tips together in a V","犁式減速","Beginners learn to plow before turning."],
+["edge","v.","B2","edʒ","","to press the sharp sides of skis into snow","用鋼邊咬雪","Edge harder or you'll slide on ice."],
+["skid","v.","B2","skɪd","","to slide sideways out of control","側滑打滑","My skis skidded on the hardpack."],
+["defog","v.","B2","ˌdiːˈfɑːɡ","ˌdiːˈfɒɡ","to remove mist from goggles or glass","除霧","I stopped to defog my goggles."],
+["bundle up","phr. v.","B2","ˌbʌn.dəlˈʌp","","to dress very warmly","裹得暖暖的","Bundle up before the first chairlift ride."],
+["tuck","v.","B2","tʌk","","to crouch low to go faster","壓低身体加速","He tucked and flew past everyone."],
+["unclip","v.","B2","ˌʌnˈklɪp","","to release something from a fastener","解開（雪板固定器）","Unclip your boots before walking inside."],
+["icy","adj.","B1","ˈaɪ.si","","covered with ice; very slippery","結冰的","The morning runs are icy before the sun."],
+["powdery","adj.","B2","ˈpaʊ.dɚ.i","ˈpaʊ.dər.i","soft and fine like powder","粉雪的","The snow was light and powdery all week."],
+["groomed","adj.","B2","ɡruːmd","","flattened and prepared by machines","壓過雪道的","I prefer groomed runs early in the season."],
+["gentle","adj.","B1","ˈdʒen.t̬əl","ˈdʒen.təl","not steep or extreme","平緩的","Start on the gentle green slopes."],
+["crisp","adj.","B2","krɪsp","","cold, dry and fresh in a pleasant way","清冽的","The air up there is wonderfully crisp."],
+["frosty","adj.","B1","ˈfrɑː.sti","ˈfrɒs.ti","very cold, with white frozen crystals","結霜嚴寒的","Our masks turned frosty on the lift."],
+["numb","adj.","B2","nʌm","","unable to feel anything from cold","凍僵麻木的","My toes went numb by the third run."],
+["bumpy","adj.","B1","ˈbʌm.pi","","full of raised uneven areas","顛簸的","The afternoon snow gets bumpy and slushy."],
+["foggy","adj.","A2","ˈfɑː.ɡi","ˈfɒɡ.i","hard to see through thick cloud","起霧的","The summit was too foggy to ski."],
+["exhilarating","adj.","B2","ɪɡˈzɪl.ə.reɪ.t̬ɪŋ","ɪɡˈzɪl.ə.reɪ.tɪŋ","making you feel extremely excited and alive","暢快刺激的","The first run of the day is exhilarating."],
+["waist-deep","adj.","B2","ˌweɪstˈdiːp","","reaching up to your waist","深及腰的","They found waist-deep powder in the trees."],
+["off-piste","adj.","B2","ˌɑːfˈpiːst","ˌɒfˈpiːst","away from prepared ski runs","雪道外的","Only go off-piste with a guide."],
+["chapped","adj.","B2","tʃæpt","","sore and cracked from cold wind","（嘴唇）乾裂的","My lips get chapped without balm."],
+["fearless","adj.","B2","ˈfɪr.ləs","ˈfɪə.ləs","showing no fear at all","無所畏懼的","The kids here are completely fearless."],
+["snow-capped","adj.","B2","ˈsnoʊ.kæpt","ˈsnəʊ.kæpt","having a top covered with snow","白雪蓋頂的","Snow-capped peaks surrounded the resort."],
+["slope","n.","B1","sloʊp","sləʊp","a surface that goes up or down; a ski run","坡道","We had the whole slope to ourselves."],
+["lift","n.","B1","lɪft","","a machine that carries skiers up the mountain","纜車","The lift line was short on Tuesday."],
+["resort","n.","B1","rɪˈzɔːrt","rɪˈzɔːt","a place built for holidays and skiing","滑雪度假村","The resort opens in late November."],
+["goggles","n.","B1","ˈɡɑː.ɡəlz","ˈɡɒɡ.əlz","protective glasses worn for skiing","雪鏡","Yellow goggles help on flat-light days."],
+["powder","n.","B2","ˈpaʊ.dɚ","ˈpaʊ.də","fresh, deep, soft snow","粉雪","Everyone raced up for the fresh powder."],
+["mogul","n.","B2","ˈmoʊ.ɡəl","ˈməʊ.ɡəl","a bump of snow on a ski run","雪包","Moguls destroy my thighs every time."],
+["run","n.","B1","rʌn","","a marked path down a ski mountain","雪道","Let's do one more run before lunch."],
+["gondola","n.","B2","ˈɡɑːn.də.lə","ˈɡɒn.də.lə","an enclosed cabin lift","箱型纜車","The gondola ride up takes fifteen minutes."],
+["snowfall","n.","B1","ˈsnoʊ.fɑːl","ˈsnəʊ.fɔːl","an amount of snow that falls","降雪","Last night's snowfall was thirty centimeters."],
+["bindings","n.","B2","ˈbaɪn.dɪŋz","","the parts that attach boots to skis","固定器","Have your bindings checked every season."],
+["whiteout","n.","B2","ˈwaɪt.aʊt","","weather where snow makes it impossible to see","白矇天","We waited out the whiteout in the lodge."],
+["après-ski","n.","B2","ˌæp.reɪˈskiː","ˌæp.rəˈskiː","drinks and fun after a day of skiing","滑雪後小酌","Honestly, I'm here for the après-ski."],
+["slush","n.","B2","slʌʃ","","partly melted wet snow","雪泥","Spring skiing means slush by noon."],
+["traction","n.","B2","ˈtræk.ʃən","","grip that stops sliding","抓地力","Fresh snow gives much better traction."],
+["downhill","adv.","B1","ˌdaʊnˈhɪl","","toward the bottom of a slope","往下坡地","She flew downhill without a single turn."],
+["swiftly","adv.","B2","ˈswɪft.li","","quickly and smoothly","迅捷地","The patrol arrived swiftly after the fall."],
+["cautiously","adv.","B2","ˈkɑː.ʃəs.li","ˈkɔː.ʃəs.li","carefully, avoiding risk","謹慎地","Ski cautiously near the trees."],
+["headfirst","adv.","B2","ˌhedˈfɝːst","ˌhedˈfɜːst","with your head going in front","頭朝前地","He slid headfirst into the soft snow."],
+["backwards","adv.","B1","ˈbæk.wɚdz","ˈbæk.wədz","in the direction behind you","向後地","Some snowboarders ride backwards for fun."],
+["cleanly","adv.","B2","ˈkliːn.li","","smoothly, without mistakes","乾淨俐落地","She landed the small jump cleanly."]
+]);
+W("life","novel",[
+["devour","v.","B2","dɪˈvaʊr","dɪˈvaʊə","to read something quickly and eagerly","一口氣讀完","I devoured the whole trilogy in a week."],
+["skim","v.","B2","skɪm","","to read quickly to get the main idea","略讀","I skimmed the slow chapters, honestly."],
+["immerse","v.","B2","ɪˈmɝːs","ɪˈmɜːs","to become completely involved in something","沉浸","I love immersing myself in a good fantasy world."],
+["unfold","v.","B2","ʌnˈfoʊld","ʌnˈfəʊld","to develop or be revealed gradually","（情節）展開","The mystery unfolds across three timelines."],
+["portray","v.","B2","pɔːrˈtreɪ","pɔːˈtreɪ","to describe or show a person in a certain way","刻劃","The author portrays grief with such honesty."],
+["narrate","v.","B2","ˈner.eɪt","nəˈreɪt","to tell a story","敘述","The story is narrated by the family dog."],
+["reread","v.","B1","ˌriːˈriːd","","to read something again","重讀","I reread my favorite novel every winter."],
+["anticipate","v.","B2","ænˈtɪs.ə.peɪt","","to expect and look forward to something","期待；預期","Fans are anticipating the final book."],
+["unravel","v.","B2","ʌnˈræv.əl","","to become clear after being complicated","解開；揭曉","The truth slowly unravels in part two."],
+["captivate","v.","B2","ˈkæp.tə.veɪt","","to hold someone's complete attention","深深吸引","The opening chapter captivated me instantly."],
+["leaf through","phr. v.","B2","ˌliːfˈθruː","","to turn pages quickly, looking briefly","隨手翻閱","I leafed through it at the bookstore."],
+["dog-ear","v.","B2","ˈdɑːɡ.ɪr","ˈdɒɡ.ɪə","to fold a page corner to mark your place","折書角","Please don't dog-ear my books."],
+["annotate","v.","B2","ˈæn.ə.teɪt","","to write notes on a text","做註記","She annotates in pencil, never pen."],
+["foreshadow","v.","B2","fɔːrˈʃæd.oʊ","fɔːˈʃæd.əʊ","to hint at what will happen later","埋下伏筆","The storm foreshadows the family's collapse."],
+["conclude","v.","B1","kənˈkluːd","","to bring something to an end","收尾；結束","The series concludes better than I feared."],
+["gripping","adj.","B2","ˈɡrɪp.ɪŋ","","so exciting you cannot stop reading","扣人心弦的","It's a gripping thriller set in Seoul."],
+["immersive","adj.","B2","ɪˈmɝːs","ɪˈmɜː.sɪv","making you feel completely inside a world","身歷其境的","The world-building is fully immersive."],
+["heartbreaking","adj.","B2","ˈhɑːrtˌbreɪ.kɪŋ","ˈhɑːtˌbreɪ.kɪŋ","causing deep sadness","令人心碎的","The last letter is quietly heartbreaking."],
+["predictable","adj.","B2","prɪˈdɪk.tə.bəl","","easy to guess in advance","可預測的","The romance plot felt a bit predictable."],
+["thought-provoking","adj.","B2","ˈθɑːt.prəˌvoʊ.kɪŋ","ˈθɔːt.prəˌvəʊ.kɪŋ","making you think deeply","發人深省的","It's a thought-provoking take on memory."],
+["poetic","adj.","B2","poʊˈet̬.ɪk","pəʊˈet.ɪk","beautiful and expressive like poetry","詩意的","Her prose is spare but poetic."],
+["fast-paced","adj.","B2","ˌfæstˈpeɪst","ˌfɑːstˈpeɪst","moving quickly from event to event","節奏明快的","It's fast-paced—perfect for the commute."],
+["literary","adj.","B2","ˈlɪt̬.ə.rer.i","ˈlɪt.ər.ər.i","serious and artistic in style","文學性的","She mostly reads literary fiction."],
+["dystopian","adj.","B2","dɪˈstoʊ.pi.ən","dɪˈstəʊ.pi.ən","describing a dark imagined future society","反烏托邦的","Dystopian novels feel a little too real lately."],
+["bittersweet","adj.","B2","ˌbɪt̬.ɚˈswiːt","ˌbɪt.əˈswiːt","happy and sad at the same time","苦樂參半的","The ending is perfectly bittersweet."],
+["compelling","adj.","B2","kəmˈpel.ɪŋ","","so interesting you must keep going","引人入勝的","The villain is the most compelling character."],
+["atmospheric","adj.","B2","ˌæt.məsˈfer.ɪk","ˌæt.məsˈfer.ɪk","creating a strong mood or feeling","氛圍感強的","It's an atmospheric gothic set in Iceland."],
+["unreliable","adj.","B2","ˌʌn.rɪˈlaɪ.ə.bəl","","not able to be trusted or believed","不可靠的","You realize the narrator is unreliable."],
+["lyrical","adj.","B2","ˈlɪr.ɪ.kəl","","expressing emotion in a beautiful, musical way","抒情優美的","The lyrical descriptions slow the pace nicely."],
+["unputdownable","adj.","B2","ˌʌn.pʊtˈdaʊ.nə.bəl","","impossible to stop reading","讓人放不下的","Warning: this one is unputdownable."],
+["plot","n.","B1","plɑːt","plɒt","the events that make up a story","情節","The plot has three clever twists."],
+["protagonist","n.","B2","proʊˈtæɡ.ə.nɪst","prəʊˈtæɡ.ə.nɪst","the main character of a story","主角","The protagonist is a retired detective."],
+["twist","n.","B2","twɪst","","an unexpected change in the story","轉折","I did not see that twist coming."],
+["narrator","n.","B2","ˈner.eɪ.t̬ɚ","nəˈreɪ.tə","the voice telling the story","敘事者","The narrator hides things from us."],
+["paperback","n.","B1","ˈpeɪ.pɚ.bæk","ˈpeɪ.p.bæk","a book with a soft cover","平裝書","I'll wait for the paperback edition."],
+["epilogue","n.","B2","ˈep.ə.lɑːɡ","ˈep.ɪ.lɒɡ","a short final section after the main story","尾聲","The epilogue jumps ten years ahead."],
+["genre","n.","B1","ˈʒɑːn.rə","ˈʒɒn.rə","a type or category of books","文類；類型","Which genre do you read most?"],
+["trilogy","n.","B2","ˈtrɪl.ə.dʒi","","a series of three related books","三部曲","The second book of a trilogy is always risky."],
+["antagonist","n.","B2","ænˈtæɡ.ə.nɪst","","the character who opposes the hero","反派","The antagonist gets his own chapters."],
+["prose","n.","B2","proʊz","prəʊz","ordinary written language, not poetry","散文；文筆","Her prose reads like a warm conversation."],
+["motif","n.","B2","moʊˈtiːf","məʊˈtiːf","an idea or image repeated through a work","母題；重複意象","Water is a motif throughout the novel."],
+["bookworm","n.","B1","ˈbʊk.wɝːm","ˈbʊk.wɜːm","a person who loves reading","書蟲","I've been a bookworm since childhood."],
+["spine","n.","B2","spaɪn","","the edge of a book where pages are joined","書脊","I organize shelves by spine color—sorry."],
+["blurb","n.","B2","blɝːb","blɜːb","the short description on a book's cover","封底簡介","The blurb gives away too much."],
+["eagerly","adv.","B1","ˈiː.ɡɚ.li","ˈiː.ɡə.li","with excitement and impatience","迫不及待地","I'm eagerly waiting for the sequel."],
+["vividly","adv.","B2","ˈvɪv.ɪd.li","","in a clear, lifelike way","生動地","The famine scenes are vividly written."],
+["reluctantly","adv.","B2","rɪˈlʌk.tənt.li","","unwillingly, without wanting to","不情願地","I reluctantly put the book down at 2 a.m."],
+["aloud","adv.","B1","əˈlaʊd","","in a voice others can hear","出聲地","We read the funny parts aloud to each other."],
+["chronologically","adv.","B2","ˌkrɑː.nəˈlɑː.dʒɪ.kəl.i","ˌkrɒn.əˈlɒdʒ.ɪ.kəl.i","in time order","按時間順序地","The story isn't told chronologically."],
+["cover to cover","adv.","B2","ˌkʌv.ɚ.təˈkʌv.ɚ","ˌkʌv.ə.təˈkʌv.ə","from the beginning to the end of a book","從頭到尾地","I read it cover to cover on the flight."]
+]);
+W("life","home",[
+["decorate","v.","A2","ˈdek.ə.reɪt","","to make a place more attractive","佈置；裝飾","We decorated the balcony with string lights."],
+["arrange","v.","B1","əˈreɪndʒ","","to put things in a pleasing order","擺放；安排","Arrange the books by size and color."],
+["rearrange","v.","B1","ˌriː.əˈreɪndʒ","","to change the position of things","重新擺設","I rearrange the furniture every few months."],
+["display","v.","B1","dɪˈspleɪ","","to put something where people can see it","陳列展示","She displays her ceramics on open shelves."],
+["mount","v.","B2","maʊnt","","to fix something onto a wall","壁掛安裝","We mounted the TV to free up the console."],
+["declutter","v.","B2","ˌdiːˈklʌt̬.ɚ","ˌdiːˈklʌt.ə","to remove things you don't need","斷捨離；清雜物","I decluttered the whole closet last weekend."],
+["renovate","v.","B2","ˈren.ə.veɪt","","to repair and improve a building","翻修","They're renovating the kitchen this spring."],
+["furnish","v.","B2","ˈfɝː.nɪʃ","ˈfɜː.nɪʃ","to put furniture into a room","添置家具","The apartment came fully furnished."],
+["repaint","v.","B1","ˌriːˈpeɪnt","","to paint something again","重新粉刷","We repainted the bedroom a soft sage."],
+["style","v.","B2","staɪl","","to arrange objects so they look attractive","造型佈置","She styles the shelves like a magazine shoot."],
+["swap out","phr. v.","B2","ˌswɑːpˈaʊt","ˌswɒpˈaʊt","to replace one thing with another","替換","I swap out cushion covers each season."],
+["brighten","v.","B1","ˈbraɪ.tən","","to make a place lighter or more cheerful","增添明亮","Fresh flowers brighten the whole room."],
+["coordinate","v.","B2","koʊˈɔːr.də.neɪt","kəʊˈɔː.dɪ.neɪt","to make things match well together","搭配協調","Coordinate the curtains with the rug."],
+["spruce up","phr. v.","B2","ˌspruːsˈʌp","","to make something neater and more attractive","打理煥新","A new lamp spruced up the reading corner."],
+["upcycle","v.","B2","ˈʌpˌsaɪ.kəl","","to turn old things into something better","舊物改造","I upcycled a crate into a plant stand."],
+["cozy","adj.","B1","ˈkoʊ.zi","ˈkəʊ.zi","comfortable, warm and welcoming","溫馨舒適的","The reading nook is the coziest spot."],
+["airy","adj.","B2","ˈer.i","ˈeə.ri","light, open and full of fresh air","明亮通風的","White walls keep the studio airy."],
+["spacious","adj.","B1","ˈspeɪ.ʃəs","","having a lot of open room","寬敞的","Mirrors make small rooms feel spacious."],
+["rustic","adj.","B2","ˈrʌs.tɪk","","simple and old-fashioned in a country way","質樸鄉村風的","The rustic table is the room's soul."],
+["earthy","adj.","B2","ˈɝː.θi","ˈɜː.θi","in natural colors like brown and green","大地色系的","We chose an earthy palette for the bedroom."],
+["neutral","adj.","B2","ˈnuː.trəl","ˈnjuː.trəl","in soft colors like beige, grey or white","中性色的","Neutral tones make the art stand out."],
+["vintage","adj.","B1","ˈvɪn.t̬ɪdʒ","ˈvɪn.tɪdʒ","from the past and high in quality","復古的","I found a vintage mirror at the flea market."],
+["minimalist","adj.","B2","ˈmɪn.ə.mə.lɪst","","using very few things and simple style","極簡主義的","His minimalist flat has almost no decoration."],
+["plush","adj.","B2","plʌʃ","","soft, thick and luxurious","蓬鬆奢華的","Sink into the plush velvet sofa."],
+["matte","adj.","B2","mæt","","not shiny","霧面的","We picked a matte black for the frames."],
+["muted","adj.","B2","ˈmjuː.t̬ɪd","ˈmjuː.tɪd","soft and not bright","柔和低飽和的","Muted pinks feel calmer than bright ones."],
+["mismatched","adj.","B2","ˌmɪsˈmætʃt","","not matching, in a charming way","混搭不成套的","The mismatched chairs somehow work together."],
+["inviting","adj.","B2","ɪnˈvaɪ.t̬ɪŋ","ɪnˈvaɪ.tɪŋ","attractive, making you want to enter","令人想親近的","Warm lighting makes the entry inviting."],
+["harmonious","adj.","B2","hɑːrˈmoʊ.ni.əs","hɑːˈməʊ.ni.əs","fitting together in a pleasing way","和諧的","The wood tones feel harmonious throughout."],
+["homey","adj.","B2","ˈhoʊ.mi","ˈhəʊ.mi","comfortable and welcoming like home","有家的感覺的","Plants instantly make a rental feel homey."],
+["décor","n.","B2","deɪˈkɔːr","ˈdeɪ.kɔː","the style of furniture and decoration","居家風格","Her décor mixes Japanese and Nordic ideas."],
+["houseplant","n.","B1","ˈhaʊs.plænt","ˈhaʊs.plɑːnt","a plant grown indoors","室內植物","I've somehow collected thirty houseplants."],
+["rug","n.","A2","rʌɡ","","a thick mat that covers part of a floor","地毯","A big rug anchors the seating area."],
+["cushion","n.","B1","ˈkʊʃ.ən","","a soft pillow used on seats","抱枕","Throw cushions are my weakness."],
+["shelving","n.","B2","ˈʃel.vɪŋ","","a set of shelves","層架","Open shelving displays the nice dishes."],
+["lighting","n.","B1","ˈlaɪ.t̬ɪŋ","ˈlaɪ.tɪŋ","the lights used in a space","燈光","Layered lighting changes the mood at night."],
+["accent","n.","B2","ˈæk.sent","","a small touch of color or decoration","點綴色；跳色","Mustard accents warm up the grey sofa."],
+["ambience","n.","B2","ˈæm.bi.əns","","the feeling or mood of a place","氛圍","Candles create the whole ambience."],
+["throw","n.","B2","θroʊ","θrəʊ","a light blanket used for decoration","披毯","Drape a throw over the armchair."],
+["vase","n.","B1","veɪs","vɑːz","a container for flowers","花瓶","One branch in a tall vase is enough."],
+["nook","n.","B2","nʊk","","a small cozy corner","小角落","We turned the window nook into a bench."],
+["statement piece","n.","B2","ˈsteɪt.mənt ˌpiːs","","one bold item that defines a room","焦點單品","The arc lamp is the room's statement piece."],
+["floor plan","n.","B2","ˈflɔːr ˌplæn","ˈflɔː ˌplæn","a drawing of a home's layout from above","平面圖","An open floor plan suits how we live."],
+["storage","n.","B1","ˈstɔːr.ɪdʒ","","space for keeping things","收納","Hidden storage keeps the surfaces clear."],
+["neatly","adv.","B1","ˈniːt.li","","in a tidy, careful way","整齊地","Cables are neatly tucked behind the desk."],
+["symmetrically","adv.","B2","sɪˈmet.rɪ.kəl.i","","balanced equally on both sides","對稱地","The prints are hung symmetrically."],
+["sparingly","adv.","B2","ˈsper.ɪŋ.li","ˈspeə.rɪŋ.li","using only a little of something","節制地","Use bold color sparingly in small rooms."],
+["tastefully","adv.","B2","ˈteɪst.fəl.i","","with good style and judgment","有品味地","The apartment is tastefully understated."],
+["intentionally","adv.","B2","ɪnˈten.ʃən.əl.i","","on purpose","有意地","The shelf is intentionally left half empty."],
+["throughout","adv.","B2","θruːˈaʊt","","in every part","處處；貫穿全室地","We used the same oak flooring throughout."]
+]);
+W("life","museum",[
+["curate","v.","B2","ˈkjʊr.eɪt","kjʊəˈreɪt","to choose and organize items for an exhibition","策展","She curated a show on women photographers."],
+["exhibit","v.","B2","ɪɡˈzɪb.ɪt","","to show works publicly","展出","The gallery exhibits local artists monthly."],
+["admire","v.","B1","ədˈmaɪr","ədˈmaɪə","to look at something with pleasure and respect","欣賞讚嘆","We stood admiring the ceiling for ages."],
+["stroll","v.","B1","stroʊl","strəʊl","to walk slowly for pleasure","悠閒漫步","We strolled through the sculpture garden."],
+["interpret","v.","B2","ɪnˈtɝː.prət","ɪnˈtɜː.prɪt","to explain or decide the meaning of something","詮釋","Everyone interprets that painting differently."],
+["sketch","v.","B1","sketʃ","","to draw quickly and simply","速寫","Students sat sketching the statues."],
+["appreciate","v.","B1","əˈpriː.ʃi.eɪt","","to recognize the value of something","領略；欣賞","You appreciate the scale only in person."],
+["depict","v.","B2","dɪˈpɪkt","","to show or represent in a picture","描繪","The mural depicts the city's history."],
+["contemplate","v.","B2","ˈkɑːn.t̬əm.pleɪt","ˈkɒn.təm.pleɪt","to look at or think about something deeply","凝視沉思","He contemplated the Rothko for twenty minutes."],
+["restore","v.","B2","rɪˈstɔːr","rɪˈstɔː","to return something to its original condition","修復","Experts spent years restoring the fresco."],
+["unveil","v.","B2","ʌnˈveɪl","","to show something new to the public for the first time","揭幕","The museum unveils the new wing in May."],
+["linger","v.","B2","ˈlɪŋ.ɡɚ","ˈlɪŋ.ɡə","to stay longer because you don't want to leave","流連","We lingered in the last room until closing."],
+["gaze","v.","B2","ɡeɪz","","to look steadily for a long time","注視","Visitors gazed up at the whale skeleton."],
+["marvel","v.","B2","ˈmɑːr.vəl","ˈmɑː.vəl","to feel great surprise and admiration","驚嘆","I marveled at the tiny brushwork."],
+["ponder","v.","B2","ˈpɑːn.dɚ","ˈpɒn.də","to think about something carefully","思索","The installation makes you ponder time itself."],
+["abstract","adj.","B2","ˈæb.strækt","","showing ideas rather than real things","抽象的","I'm finally learning to enjoy abstract art."],
+["contemporary","adj.","B2","kənˈtem.pə.rer.i","kənˈtem.pər.ər.i","belonging to the present time","當代的","The contemporary wing is my favorite."],
+["surreal","adj.","B2","səˈriːl","səˈrɪəl","strange, like a dream","超現實的","The exhibit has a lovely surreal quality."],
+["monochrome","adj.","B2","ˈmɑː.nə.kroʊm","ˈmɒn.ə.krəʊm","using only one color or black and white","單色的","A whole room of monochrome photography."],
+["intricate","adj.","B2","ˈɪn.trə.kət","","full of small, complicated details","精細繁複的","The lace-like carvings are incredibly intricate."],
+["evocative","adj.","B2","ɪˈvɑː.kə.t̬ɪv","ɪˈvɒk.ə.tɪv","bringing strong feelings or memories to mind","勾起情感的","Her seascapes are quietly evocative."],
+["avant-garde","adj.","B2","ˌæv.ɑ̃ːˈɡɑːrd","ˌæv.ɒ̃ˈɡɑːd","extremely new and experimental","前衛的","The avant-garde section confused and delighted me."],
+["understated","adj.","B2","ˌʌn.dɚˈsteɪ.t̬ɪd","ˌʌn.dəˈsteɪ.tɪd","simple and not showy, in an elegant way","低調內斂的","The framing is deliberately understated."],
+["provocative","adj.","B2","prəˈvɑː.kə.t̬ɪv","prəˈvɒk.ə.tɪv","intended to cause strong reactions or debate","挑釁引發討論的","It's a provocative piece about consumption."],
+["conceptual","adj.","B2","kənˈsep.tʃu.əl","","based on ideas more than objects","觀念性的","Conceptual art asks more than it shows."],
+["delicate","adj.","B2","ˈdel.ə.kət","","fine, soft and easily damaged","細膩脆弱的","The delicate paper works are behind glass."],
+["grand","adj.","B1","ɡrænd","ɡrɑːnd","large and impressive","宏偉的","The grand staircase is a work of art itself."],
+["haunting","adj.","B2","ˈhɑːn.tɪŋ","ˈhɔːn.tɪŋ","beautiful in a sad way that stays with you","縈繞心頭的","The war portraits are haunting."],
+["ornate","adj.","B2","ɔːrˈneɪt","ɔːˈneɪt","decorated with many complicated details","華麗雕飾的","The ornate frames almost outshine the paintings."],
+["gilded","adj.","B2","ˈɡɪl.dɪd","","covered with a thin layer of gold","鍍金的","Sunlight caught the gilded altar piece."],
+["exhibition","n.","B1","ˌek.səˈbɪʃ.ən","","a public show of art or objects","展覽","The exhibition runs until August."],
+["gallery","n.","B1","ˈɡæl.ɚ.i","ˈɡæl.ər.i","a room or building for showing art","展間；美術館","We ducked into a tiny gallery near the station."],
+["masterpiece","n.","B2","ˈmæs.tɚ.piːs","ˈmɑː.stə.piːs","an artist's greatest work","傑作","Seeing the masterpiece in person is different."],
+["sculpture","n.","B1","ˈskʌlp.tʃɚ","ˈskʌlp.tʃə","art made by shaping stone, metal or clay","雕塑","The bronze sculpture guards the entrance."],
+["canvas","n.","B2","ˈkæn.vəs","","the cloth surface a painting is made on","畫布","The canvas is nearly four meters wide."],
+["brushstroke","n.","B2","ˈbrʌʃ.stroʊk","ˈbrʌʃ.strəʊk","a single mark made by a paintbrush","筆觸","Up close, the brushstrokes look chaotic."],
+["installation","n.","B2","ˌɪn.stəˈleɪ.ʃən","","a large artwork built inside a space","裝置藝術","The mirror installation is made for photos."],
+["admission","n.","B1","ədˈmɪʃ.ən","","the price or right to enter","入場（費）","Admission is free on Friday evenings."],
+["curator","n.","B2","kjʊˈreɪ.t̬ɚ","kjʊəˈreɪ.tə","the person who organizes an exhibition","策展人","The curator gave a fascinating gallery talk."],
+["portrait","n.","B1","ˈpɔːr.trət","ˈpɔː.trət","a painting or photo of a person","肖像","Her self-portraits span forty years."],
+["still life","n.","B2","ˌstɪlˈlaɪf","","a picture of objects such as fruit or flowers","靜物畫","Dutch still lifes hide little symbols."],
+["audio guide","n.","B1","ˈɑː.di.oʊ ˌɡaɪd","ˈɔː.di.əʊ ˌɡaɪd","a recorded tour you listen to","語音導覽","The audio guide is worth the extra dollars."],
+["retrospective","n.","B2","ˌret.rəˈspek.tɪv","","a show covering an artist's whole career","回顧展","They're holding a Yayoi Kusama retrospective."],
+["hue","n.","B2","hjuː","","a color or shade of a color","色調","The room glows with soft blue hues."],
+["attentively","adv.","B2","əˈten.tɪv.li","","with careful attention","專注地","He listened attentively to the docent."],
+["leisurely","adv.","B2","ˈliː.ʒɚ.li","ˈleʒ.ə.li","in a slow, relaxed way","悠哉地","We moved leisurely from room to room."],
+["closely","adv.","B1","ˈkloʊs.li","ˈkləʊs.li","carefully and in detail","仔細地","Look closely—the eyes are made of beetle wings."],
+["aimlessly","adv.","B2","ˈeɪm.ləs.li","","without any purpose or direction","漫無目的地","Wandering aimlessly is the best museum strategy."],
+["respectfully","adv.","B2","rɪˈspekt.fəl.i","","showing politeness and respect","恭敬地","Visitors spoke respectfully in the memorial hall."],
+["momentarily","adv.","B2","ˌmoʊ.mənˈter.əl.i","ˈməʊ.mən.tər.əl.i","for a very short time","片刻地","The lights dimmed momentarily between shows."]
+]);
+W("life","film",[
+["binge-watch","v.","B2","ˈbɪndʒ.wɑːtʃ","ˈbɪndʒ.wɒtʃ","to watch many episodes in one sitting","追劇馬拉松","We binge-watched the whole season in a weekend."],
+["stream","v.","B1","striːm","","to watch or listen online without downloading","串流播放","Is it streaming anywhere yet?"],
+["rewatch","v.","B1","ˌriːˈwɑːtʃ","ˌriːˈwɒtʃ","to watch something again","重看","I rewatch The Office when I'm stressed."],
+["pause","v.","A2","pɑːz","pɔːz","to stop playing for a short time","暫停","Pause it—I'll grab more snacks."],
+["spoil","v.","B1","spɔɪl","","to ruin a story by revealing what happens","爆雷","Don't spoil the finale for me!"],
+["adapt","v.","B2","əˈdæpt","","to change a book into a film or series","改編","They're adapting her novel for TV."],
+["rave","v.","B2","reɪv","","to praise something very enthusiastically","狂讚","Everyone's raving about the new series."],
+["tear up","phr. v.","B2","ˌterˈʌp","ˌtɪərˈʌp","to almost cry","眼眶泛淚","I teared up at the wedding scene."],
+["premiere","v.","B2","prɪˈmɪr","ˈprem.i.eə","to be shown for the first time","首映","The final season premieres in October."],
+["doze off","phr. v.","B2","ˌdoʊzˈɑːf","ˌdəʊzˈɒf","to fall asleep without meaning to","打瞌睡","I dozed off during the third episode."],
+["fast-forward","v.","B1","ˌfæstˈfɔːr.wɚd","ˌfɑːstˈfɔː.wəd","to skip ahead quickly","快轉","I fast-forward through the recaps."],
+["recap","v.","B2","ˈriː.kæp","","to summarize what happened before","重點回顧","Can you recap last season for me?"],
+["hook","v.","B2","hʊk","","to catch someone's interest completely","使上癮","The pilot hooked me in ten minutes."],
+["critique","v.","B2","krɪˈtiːk","","to judge and analyze something in detail","評析","We love critiquing movies on the walk home."],
+["zone out","phr. v.","B2","ˌzoʊnˈaʊt","ˌzəʊnˈaʊt","to stop paying attention","放空","I zoned out during the battle scenes."],
+["cheesy","adj.","B2","ˈtʃiː.zi","","too emotional or unoriginal, in a silly way","老套肉麻的","It's cheesy, but I cry every time."],
+["suspenseful","adj.","B2","səˈspens.fəl","","keeping you nervous about what happens next","懸疑緊張的","The finale was almost too suspenseful."],
+["overrated","adj.","B2","ˌoʊ.vɚˈreɪ.t̬ɪd","ˌəʊ.vəˈreɪ.tɪd","praised more than it deserves","被高估的","Honestly? I found it a bit overrated."],
+["underrated","adj.","B2","ˌʌn.dɚˈreɪ.t̬ɪd","ˌʌn.dəˈreɪ.tɪd","better than people say it is","被低估的","It's the most underrated show on the platform."],
+["gory","adj.","B2","ˈɡɔːr.i","","showing a lot of blood and violence","血腥的","Skip dinner—it gets pretty gory."],
+["heartwarming","adj.","B2","ˈhɑːrtˌwɔːr.mɪŋ","ˈhɑːtˌwɔː.mɪŋ","giving warm, happy feelings","暖心的","It's a heartwarming story about neighbors."],
+["cringey","adj.","B2","ˈkrɪn.dʒi","","so awkward it's embarrassing to watch","令人尷尬的","The dance scene is deliciously cringey."],
+["binge-worthy","adj.","B2","ˈbɪndʒˌwɝː.ði","ˈbɪndʒˌwɜː.ði","good enough to watch nonstop","值得一口氣追的","Any binge-worthy recommendations for the holidays?"],
+["mind-blowing","adj.","B2","ˈmaɪndˌbloʊ.ɪŋ","ˈmaɪndˌbləʊ.ɪŋ","extremely surprising and impressive","顛覆想像的","The twist in episode seven is mind-blowing."],
+["slow-paced","adj.","B2","ˌsloʊˈpeɪst","ˌsləʊˈpeɪst","developing slowly","步調緩慢的","It's slow-paced but beautifully shot."],
+["star-studded","adj.","B2","ˈstɑːrˌstʌd.ɪd","ˈstɑːˌstʌd.ɪd","full of famous actors","星光熠熠的","The cast is absurdly star-studded."],
+["subtitled","adj.","B1","ˈsʌb.taɪ.t̬əld","ˈsʌb.taɪ.təld","having translated text on screen","有字幕的","I prefer subtitled to dubbed versions."],
+["gritty","adj.","B2","ˈɡrɪt̬.i","ˈɡrɪt.i","showing harsh reality in a raw way","寫實粗礪的","It's a gritty crime drama set in Naples."],
+["formulaic","adj.","B2","ˌfɔːr.mjəˈleɪ.ɪk","ˌfɔː.mjʊˈleɪ.ɪk","following the same predictable pattern","公式化的","Season three felt formulaic."],
+["addictive","adj.","B2","əˈdɪk.tɪv","","hard to stop watching","令人上癮的","Dangerously addictive—start on a Friday."],
+["episode","n.","A2","ˈep.ə.soʊd","ˈep.ɪ.səʊd","one part of a series","一集","Just one more episode, I promise."],
+["season","n.","A2","ˈsiː.zən","","a set of episodes released together","一季","Season two is even better."],
+["trailer","n.","B1","ˈtreɪ.lɚ","ˈtreɪ.lə","a short preview of a film or show","預告片","The trailer gives away half the plot."],
+["plot hole","n.","B2","ˈplɑːt ˌhoʊl","ˈplɒt ˌhəʊl","a mistake or gap in a story's logic","劇情漏洞","Fans found a huge plot hole in the timeline."],
+["cliffhanger","n.","B2","ˈklɪfˌhæŋ.ɚ","ˈklɪfˌhæŋ.ə","an exciting unresolved ending","懸念結尾","Every episode ends on a cliffhanger."],
+["finale","n.","B2","fəˈnæl.i","fɪˈnɑː.li","the last episode of a season or series","完結篇","The finale divided the whole internet."],
+["sequel","n.","B1","ˈsiː.kwəl","","a film that continues an earlier story","續集","The sequel is better than the original."],
+["cast","n.","B1","kæst","kɑːst","all the actors in a production","卡司","The whole cast returned for the reunion."],
+["rating","n.","B1","ˈreɪ.t̬ɪŋ","ˈreɪ.tɪŋ","a score showing how good something is","評分","It holds a 95 percent rating."],
+["franchise","n.","B2","ˈfræn.tʃaɪz","","a series of connected films and products","系列作品","The franchise now spans nine movies."],
+["spoiler","n.","B1","ˈspɔɪ.lɚ","ˈspɔɪ.lə","information that ruins a story's surprises","雷；劇透","Spoiler warning for episode five!"],
+["rerun","n.","B2","ˈriː.rʌn","","an old episode broadcast again","重播","Sunday afternoons are for sitcom reruns."],
+["screenplay","n.","B2","ˈskriːn.pleɪ","","the written script of a film","電影劇本","The screenplay won every award that year."],
+["blockbuster","n.","B2","ˈblɑːkˌbʌs.tɚ","ˈblɒkˌbʌs.tə","a hugely successful movie","賣座大片","Summer blockbusters all look the same lately."],
+["nonstop","adv.","B1","ˌnɑːnˈstɑːp","ˌnɒnˈstɒp","without stopping","不停歇地","We watched nonstop until 3 a.m."],
+["midway","adv.","B2","ˌmɪdˈweɪ","","at the middle point","中途地","The tone shifts completely midway through."],
+["back-to-back","adv.","B2","ˌbæk.təˈbæk","","one immediately after another","連續接連地","We watched all three films back-to-back."],
+["nightly","adv.","B2","ˈnaɪt.li","","every night","每晚地","We watch one episode nightly after dinner."],
+["lately","adv.","B1","ˈleɪt.li","","recently","最近","What have you been watching lately?"],
+["critically","adv.","B2","ˈkrɪt̬.ɪ.kəl.i","ˈkrɪt.ɪ.kəl.i","according to professional reviewers","評論界地","The film was critically acclaimed but flopped."]
+]);
+W("life","vinyl",[
+["spin","v.","B2","spɪn","","to play a record","播放（唱片）","He spins jazz records every Sunday morning."],
+["flip","v.","B1","flɪp","","to turn a record over to the other side","翻面","Time to flip to side B."],
+["dig","v.","B2","dɪɡ","","to search through crates of records","挖寶","We spent hours digging at the record fair."],
+["press","v.","B2","pres","","to manufacture a vinyl record","壓片","Only 500 copies were pressed."],
+["skip","v.","B1","skɪp","","to jump and miss part of the music","跳針；跳過","The old record skips on track three."],
+["fade","v.","B2","feɪd","","to become gradually quieter","漸弱淡出","The last song slowly fades into silence."],
+["remaster","v.","B2","ˌriːˈmæs.tɚ","ˌriːˈmɑː.stə","to improve the sound of an old recording","重新混音母帶","The album was remastered for its anniversary."],
+["shuffle","v.","B1","ˈʃʌf.əl","","to play songs in random order","隨機播放","Vinyl cured my habit of shuffling everything."],
+["queue up","phr. v.","B2","ˌkjuːˈʌp","","to prepare something to play next","排入待播","Queue up something mellow for dinner."],
+["crank up","phr. v.","B2","ˌkræŋkˈʌp","","to turn the volume much higher","開大聲","Crank it up—this is the best part!"],
+["hum","v.","B1","hʌm","","to sing with closed lips","哼唱","She hummed along while cooking."],
+["browse","v.","B1","braʊz","","to look through things casually","隨意翻找","I could browse record shops all afternoon."],
+["drop","v.","B2","drɑːp","drɒp","to release new music; to lower the needle","發行；下針","Their new album drops Friday."],
+["warp","v.","B2","wɔːrp","wɔːp","to bend out of shape from heat","變形翹曲","Records warp if you leave them in the sun."],
+["thrift","v.","B2","θrɪft","","to shop for secondhand treasures","逛二手店","I thrifted this pristine Coltrane for two dollars."],
+["mellow","adj.","B2","ˈmel.oʊ","ˈmel.əʊ","soft, smooth and relaxing","柔和放鬆的","Sunday calls for something mellow."],
+["scratchy","adj.","B2","ˈskrætʃ.i","","with a rough, damaged sound","有刮痕雜音的","The scratchy intro is part of the charm."],
+["crackly","adj.","B2","ˈkræk.əl.i","","making small popping sounds","有滋滋聲的","I love that warm, crackly first second."],
+["analog","adj.","B2","ˈæn.ə.lɑːɡ","ˈæn.ə.lɒɡ","not digital; physical in format","類比的","Analog sound just feels more alive."],
+["pristine","adj.","B2","ˈprɪs.tiːn","","in perfect, unused condition","完好如新的","The sleeve is pristine after fifty years."],
+["mint","adj.","B2","mɪnt","","in perfect condition, like new","全新品相的","It's a first pressing in mint condition."],
+["rare","adj.","B1","rer","reə","hard to find","稀有的","That single is genuinely rare now."],
+["obscure","adj.","B2","əbˈskjʊr","əbˈskjʊə","known by very few people","冷門的","He collects obscure Japanese city pop."],
+["groovy","adj.","B2","ˈɡruː.vi","","with an irresistible rhythm; cool","律動感十足的","The bassline is impossibly groovy."],
+["soulful","adj.","B2","ˈsoʊl.fəl","ˈsəʊl.fəl","full of deep feeling","深情有靈魂的","Her soulful voice fills the room."],
+["catchy","adj.","B1","ˈkætʃ.i","","easy to remember and hard to forget","洗腦好記的","That chorus is dangerously catchy."],
+["retro","adj.","B1","ˈret.roʊ","ˈret.rəʊ","in the style of the past, on purpose","復古風的","The whole shop has a retro seventies feel."],
+["lo-fi","adj.","B2","ˌloʊˈfaɪ","ˌləʊˈfaɪ","with a rough, unpolished sound quality","低傳真的","Lo-fi recordings feel intimate somehow."],
+["upbeat","adj.","B1","ˈʌp.biːt","","fast, happy and positive","歡快的","Put on something upbeat while we clean."],
+["nostalgic","adj.","B2","nɑːˈstæl.dʒɪk","nɒsˈtæl.dʒɪk","making you miss the past sweetly","懷舊的","That song makes me instantly nostalgic."],
+["turntable","n.","B2","ˈtɝːnˌteɪ.bəl","ˈtɜːnˌteɪ.bəl","the machine that plays vinyl records","黑膠唱盤","My first turntable was a hand-me-down."],
+["stylus","n.","B2","ˈstaɪ.ləs","","the needle that reads a record's groove","唱針","Replace the stylus every thousand hours."],
+["sleeve","n.","B2","sliːv","","the cover that holds a record","唱片封套","The gatefold sleeve art is stunning."],
+["tracklist","n.","B2","ˈtræk.lɪst","","the ordered list of songs on an album","曲目表","Side one has the stronger tracklist."],
+["B-side","n.","B2","ˈbiː.saɪd","","the secondary side of a single","B 面歌曲","Sometimes the B-side becomes the classic."],
+["pressing","n.","B2","ˈpres.ɪŋ","","one manufactured batch of a record","壓片版次","Original pressings cost a fortune now."],
+["groove","n.","B2","ɡruːv","","the spiral cut in a record; a rhythm","溝槽；律動","The needle rides the groove perfectly."],
+["crate","n.","B2","kreɪt","","a box used to store records","唱片箱","Every crate in that shop hides a gem."],
+["LP","n.","B1","ˌelˈpiː","","a full-length record album","專輯唱片","Their debut LP still sounds fresh."],
+["liner notes","n.","B2","ˈlaɪ.nɚ ˌnoʊts","ˈlaɪ.nə ˌnəʊts","the printed text inside an album","專輯內頁文字","Reading liner notes is half the joy."],
+["reissue","n.","B2","ˌriːˈɪʃ.uː","","a new release of an old album","復刻版","The reissue includes three unreleased tracks."],
+["static","n.","B2","ˈstæt̬.ɪk","ˈstæt.ɪk","the crackling noise from electricity or dust","靜電雜音","A carbon brush removes most static."],
+["fidelity","n.","B2","fəˈdel.ə.t̬i","fɪˈdel.ə.ti","how accurately sound is reproduced","音質保真度","Audiophiles chase perfect fidelity."],
+["discography","n.","B2","dɪˈskɑː.ɡrə.fi","dɪˈskɒɡ.r.fi","all the recordings an artist has made","作品全集","I'm collecting her entire discography."],
+["softly","adv.","B1","ˈsɑːft.li","ˈsɒft.li","quietly and gently","輕柔地","The record played softly in the background."],
+["endlessly","adv.","B2","ˈend.ləs.li","","without ever stopping","無止盡地","I could listen to this endlessly."],
+["on repeat","adv.","B1","ˌɑːn.rɪˈpiːt","ˌɒn.rɪˈpiːt","played again and again","重複播放地","That album's been on repeat all month."],
+["faithfully","adv.","B2","ˈfeɪθ.fəl.i","","accurately, staying true to the original","忠實地","The reissue faithfully reproduces the mono mix."],
+["casually","adv.","B1","ˈkæʒ.u.ə.li","","in a relaxed way, without planning","隨性地","We casually flipped through the dollar bin."],
+["digitally","adv.","B2","ˈdɪdʒ.ə.t̬əl.i","ˈdɪdʒ.ɪ.təl.i","using digital technology","數位地","I stream digitally but buy vinyl for love."]
+]);
+W("life","fest",[
+["headline","v.","B2","ˈhed.laɪn","","to be the main act of a show","擔任壓軸","Who's headlining Saturday night?"],
+["sway","v.","B2","sweɪ","","to move slowly from side to side","隨樂搖擺","The whole crowd swayed with phone lights up."],
+["mosh","v.","B2","mɑːʃ","mɒʃ","to dance by pushing and jumping in a crowd","衝撞熱舞","People were moshing near the front barrier."],
+["chant","v.","B2","tʃænt","tʃɑːnt","to repeat words rhythmically as a group","齊聲吶喊","The crowd chanted for one more song."],
+["camp out","phr. v.","B1","ˌkæmpˈaʊt","","to sleep outside in a tent","紮營過夜","We camped out all weekend at the festival."],
+["line up","phr. v.","A2","ˌlaɪnˈʌp","","to wait in a line of people","排隊","We lined up two hours early for the rail."],
+["sing along","phr. v.","B1","ˌsɪŋ.əˈlɑːŋ","ˌsɪŋ.əˈlɒŋ","to sing together with the performer","跟著合唱","Sixty thousand people sang along word for word."],
+["cheer","v.","B1","tʃɪr","tʃɪə","to shout with happiness and support","歡呼","The crowd cheered as the lights dropped."],
+["blast","v.","B2","blæst","blɑːst","to play music extremely loudly","震天播放","The speakers blasted bass across the field."],
+["wind down","phr. v.","B2","ˌwaɪndˈdaʊn","","to gradually relax after excitement","收心放鬆","We wound down at the acoustic stage."],
+["kick off","phr. v.","B2","ˌkɪkˈɑːf","ˌkɪkˈɒf","to begin","開場","The festival kicks off at noon Friday."],
+["soak up","phr. v.","B2","ˌsoʊkˈʌp","ˌsəʊkˈʌp","to enjoy and absorb an atmosphere","盡情感受","We just soaked up the sunset set."],
+["roar","v.","B2","rɔːr","rɔː","to make a loud deep crowd sound","轟然歡呼","The crowd roared at the first chord."],
+["mingle","v.","B2","ˈmɪŋ.ɡəl","","to move around talking to different people","四處交流","We mingled with strangers between sets."],
+["crowd-surf","v.","B2","ˈkraʊd.sɝːf","ˈkraʊd.sɜːf","to be carried over the crowd's hands","人群衝浪","The singer crowd-surfed during the encore."],
+["electric","adj.","B2","ɪˈlek.trɪk","","full of thrilling excitement","電力四射的","The atmosphere before the encore was electric."],
+["buzzing","adj.","B2","ˈbʌz.ɪŋ","","full of energy and excited talk","熱鬧沸騰的","The campsite was buzzing all night."],
+["packed","adj.","B1","pækt","","completely full of people","擠滿人的","The tent stage was absolutely packed."],
+["deafening","adj.","B2","ˈdef.ən.ɪŋ","","extremely loud","震耳欲聾的","The cheering was deafening."],
+["unforgettable","adj.","B1","ˌʌn.fɚˈɡet̬.ə.bəl","ˌʌn.fəˈɡet.ə.bəl","impossible to forget","難忘的","That headline set was unforgettable."],
+["sweaty","adj.","B1","ˈswet̬.i","ˈswet.i","covered in sweat","汗流浹背的","We left the pit sweaty and grinning."],
+["euphoric","adj.","B2","juːˈfɔːr.ɪk","juːˈfɒr.ɪk","extremely, intensely happy","狂喜的","The final chorus felt euphoric."],
+["anthemic","adj.","B2","ænˈθem.ɪk","","big and powerful, made for singing together","萬人合唱式的","Their anthemic choruses own festival crowds."],
+["open-air","adj.","B2","ˌoʊ.pənˈer","ˌəʊ.pənˈeə","happening outside","露天的","There's an open-air cinema stage too."],
+["chaotic","adj.","B2","keɪˈɑː.t̬ɪk","keɪˈɒt.ɪk","completely confused and wild","混亂的","The exit was chaotic but cheerful."],
+["legendary","adj.","B2","ˈledʒ.ən.der.i","ˈledʒ.ən.dri","famous and admired for a long time","傳奇的","People still talk about that legendary rain set."],
+["hyped","adj.","B2","haɪpt","","extremely excited about something","超級期待的","I'm so hyped for the lineup announcement."],
+["rowdy","adj.","B2","ˈraʊ.di","","noisy and a little out of control","喧鬧的","The front rows got pretty rowdy."],
+["intimate","adj.","B2","ˈɪn.t̬ə.mət","ˈɪn.tɪ.mət","small, close and personal","小而親密的","She played an intimate acoustic side set."],
+["scorching","adj.","B2","ˈskɔːr.tʃɪŋ","ˈskɔː.tʃɪŋ","extremely hot","酷熱的","It was scorching until the sun dipped."],
+["lineup","n.","B2","ˈlaɪn.ʌp","","the list of performers at an event","演出陣容","This year's lineup is unreal."],
+["headliner","n.","B2","ˈhedˌlaɪ.nɚ","ˈhedˌlaɪ.nə","the most important performer","壓軸藝人","The headliner played for two full hours."],
+["crowd","n.","A2","kraʊd","","a large group of people together","人群","The crowd stretched back to the hill."],
+["encore","n.","B2","ˈɑːn.kɔːr","ˈɒŋ.kɔː","an extra performance after the end","安可","They came back for a three-song encore."],
+["set","n.","B2","set","","one performer's continuous performance","一場演出","Her sunset set was the weekend's best."],
+["wristband","n.","B1","ˈrɪst.bænd","","a band worn to show entry rights","手環","Keep your wristband on all three days."],
+["vibe","n.","B2","vaɪb","","the mood or feeling of a place","氛圍感","The whole field had such a friendly vibe."],
+["merch","n.","B2","mɝːtʃ","mɜːtʃ","products like T-shirts sold by artists","周邊商品","I always budget too little for merch."],
+["campground","n.","B1","ˈkæmp.ɡraʊnd","","an area where many tents are set up","營區","Our campground neighbors became friends."],
+["main stage","n.","B1","ˈmeɪn ˌsteɪdʒ","","the biggest stage at a festival","主舞台","Meet me left of the main stage sound tower."],
+["earplugs","n.","B1","ˈɪr.plʌɡz","ˈɪə.plʌɡz","small items worn to protect your ears","耳塞","Good earplugs saved my hearing this year."],
+["festival-goer","n.","B2","ˈfes.tə.vəlˌɡoʊ.ɚ","ˈfes.tɪ.vəlˌɡəʊ.ə","a person attending a festival","樂迷；與會者","Veteran festival-goers bring their own chairs."],
+["banger","n.","B2","ˈbæŋ.ɚ","ˈbæŋ.ə","an extremely good, energetic song","超嗨神曲","They opened with banger after banger."],
+["afterparty","n.","B2","ˈæf.tɚˌpɑːr.t̬i","ˈɑːf.təˌpɑː.ti","a party held after the main event","會後派對","The DJ afterparty went until sunrise."],
+["live","adv.","B1","laɪv","","performed in person, as it happens","現場地","Their songs hit differently live."],
+["wildly","adv.","B2","ˈwaɪld.li","","in an extreme, uncontrolled way","狂熱地","The crowd applauded wildly."],
+["backstage","adv.","B2","ˌbækˈsteɪdʒ","","behind the stage area","在後台地","We somehow ended up backstage."],
+["in unison","adv.","B2","ˌɪnˈjuː.nə.sən","ˌɪnˈjuː.nɪ.sən","together at exactly the same time","齊聲地","Thousands of voices rose in unison."],
+["spontaneously","adv.","B2","spɑːnˈteɪ.ni.əs.li","spɒnˈteɪ.ni.əs.li","suddenly, without planning","即興自發地","The crowd spontaneously started a singalong."],
+["barefoot","adv.","B2","ˈber.fʊt","ˈbeə.fʊt","without shoes","赤腳地","By day three everyone danced barefoot."]
+]);
+renderAll();
+}, 200);
+</script>
+</body>
+</html>
